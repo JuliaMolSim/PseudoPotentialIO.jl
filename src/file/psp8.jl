@@ -338,7 +338,7 @@ is_ultrasoft(file::Psp8File)::Bool = false
 is_paw(file::Psp8File)::Bool = false
 ionic_charge(file::Psp8File) = file.header.zion
 max_angular_momentum(file::Psp8File)::Int = file.header.lmax
-n_projector_radials(file::Psp8File)::Int = sum(file.header.nproj)
+n_projector_radials(file::Psp8File)::Int = sum(file.header.nproj, init=0)
 n_orbital_radials(file::Psp8File)::Int = 0
 valence_charge(file::Psp8File) = file.header.zion
 

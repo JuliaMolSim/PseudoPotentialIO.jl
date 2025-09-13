@@ -6,6 +6,7 @@ using LazyArtifacts
 using Printf
 using SHA
 using PrettyTables
+using Statistics
 
 using PeriodicTable: PeriodicTable
 import Base.Broadcast.broadcastable
@@ -23,10 +24,14 @@ using DocStringExtensions
                   $(DOCSTRING)
                   $(TYPEDFIELDS)
                   """
-## Common data
+## Data
 include("data/libxc_functionals.jl")
 include("data/psp8_functionals.jl")
 include("data/upf_functionals.jl")
+
+## Common utilities
+include("common/mesh.jl")
+export guess_mesh_type
 
 ## File datastructures and interface
 export PsPFile
@@ -38,12 +43,11 @@ export is_paw
 export formalism
 export has_spin_orbit
 export relativistic_treatment
-export has_core_density
+export has_nlcc
 export valence_charge
 export max_angular_momentum
 export n_projector_radials
-export n_chi_function_radials
-export valence_charge
+export n_orbital_radials
 include("file/file.jl")
 
 export UpfFile
@@ -57,8 +61,8 @@ include("file/psp8.jl")
 export HghFile
 include("file/hgh.jl")
 
-include("file/to_psp8.jl")
-include("file/to_upf.jl")
+include("conversion/to_psp8.jl")
+include("conversion/to_upf.jl")
 
 ## Loading/listing functions
 export load_psp_file

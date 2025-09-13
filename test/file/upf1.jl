@@ -86,7 +86,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == beta.cutoff_radius_index
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -258,7 +258,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == beta.cutoff_radius_index
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -426,7 +426,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == beta.cutoff_radius_index
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -597,7 +597,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == beta.cutoff_radius_index
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)

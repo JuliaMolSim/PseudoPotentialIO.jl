@@ -43,13 +43,13 @@ valence_charge
 atomic_charge
 n_projector_radials
 n_projector_angulars
-n_chi_function_radials
-n_chi_function_angulars
+n_orbital_radials
+n_orbital_angulars
 is_norm_conserving
 is_ultrasoft
 is_paw
 has_spin_orbit
-has_core_density
+has_nlcc
 has_valence_density
 has_chi_functions
 local_potential_cutoff_radius

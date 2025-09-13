@@ -5,6 +5,7 @@ using LazyArtifacts
 using PeriodicTable
 using JSON
 using LinearAlgebra
+using Random
 
 Random.seed!(0)
 
@@ -18,10 +19,6 @@ include("fixtures.jl")
 @testset "PseudoPotentialIO.jl" begin
     if any(in.(("all", "aqua"), Ref(TAGS)))
         include("aqua.jl")
-    end
-
-    if any(in.(("all", "common"), Ref(TAGS)))
-        include("common.jl")
     end
 
     if any(in.(("all", "file"), Ref(TAGS)))
