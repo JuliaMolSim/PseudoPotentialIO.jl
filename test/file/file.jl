@@ -17,6 +17,6 @@
         @test formalism(file) in ("norm-conserving", "ultrasoft", "projector-augmented wave")
         @test isa(has_spin_orbit(file), Bool)
         @test relativistic_treatment(file) in (:scalar, :full)
-        @test isa(has_nlcc(file), Bool)
+        @test isa(has_model_core_charge_density(file), Bool)
     end
 end

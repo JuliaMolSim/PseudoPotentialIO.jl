@@ -348,7 +348,6 @@ end
 
 identifier(psp::UpfFile)::String = psp.identifier
 format(file::UpfFile)::String = "UPF v$(file.version)"
-functional(file::UpfFile)::String = file.header.functional
 function libxc_string(header::UpfHeader)
     functional = header.functional
     upf_codes = lowercase.(split(functional))
@@ -379,18 +378,14 @@ function libxc_string(header::UpfHeader)
 
     return join([exc, corr], ' ')
 end
-libxc_string(file::UpfFile)::String = libxc_string(file.header)
+functional(file::UpfFile)::Vector{Functional} = map(s -> Functional(Symbol(lowercase(s))), split(libxc_string(file.header)))
 element(file::UpfFile) = PeriodicTable.elements[Symbol(file.header.element)]
 is_norm_conserving(file::UpfFile)::Bool = file.header.pseudo_type == "NC"
 is_ultrasoft(file::UpfFile)::Bool = file.header.pseudo_type in ("US", "USPP")
 is_paw(file::UpfFile)::Bool = file.header.pseudo_type == "PAW"
 has_spin_orbit(file::UpfFile)::Bool = file.header.has_so
-has_nlcc(file::UpfFile)::Bool = file.header.core_correction
-ionic_charge(file::UpfFile) = file.header.z_valence
-max_angular_momentum(file::UpfFile)::Int = file.header.l_max
-n_projector_radials(file::UpfFile)::Int = file.header.number_of_proj
-n_orbital_radials(file::UpfFile)::Int = file.header.number_of_wfc
-valence_charge(file::UpfFile) = file.header.z_valence
+has_model_core_charge_density(file::UpfFile)::Bool = file.header.core_correction
+valence_charge(file::UpfFile)::Int = file.header.z_valence
 
 function libxc_to_qe_libxc(libxc_string::AbstractString)::String
     # https://gitlab.com/QEF/q-e/-/blob/develop/Modules/funct.f90?ref_type=heads#L301

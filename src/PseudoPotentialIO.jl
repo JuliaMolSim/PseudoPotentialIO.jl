@@ -7,6 +7,7 @@ using Printf
 using SHA
 using PrettyTables
 using Statistics
+using Libxc
 
 using PeriodicTable: PeriodicTable
 import Base.Broadcast.broadcastable
@@ -43,7 +44,7 @@ export is_paw
 export formalism
 export has_spin_orbit
 export relativistic_treatment
-export has_nlcc
+export has_model_core_charge_density
 export valence_charge
 export max_angular_momentum
 export n_projector_radials

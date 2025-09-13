@@ -49,7 +49,7 @@ is_norm_conserving
 is_ultrasoft
 is_paw
 has_spin_orbit
-has_nlcc
+has_model_core_charge_density
 has_valence_density
 has_chi_functions
 local_potential_cutoff_radius

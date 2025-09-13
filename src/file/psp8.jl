@@ -302,9 +302,6 @@ function _parse_fortran(::Type{T}, x::AbstractString) where {T<:Real}
     return parse(T, replace(lowercase(x), "d" => "e"))
 end
 
-identifier(file::Psp8File)::String = file.identifier
-format(::Psp8File)::String = "PSP8"
-functional(file::Psp8File)::Int = file.header.pspxc
 function libxc_string(header::Psp8Header)::String
     pspxc = header.pspxc
     if pspxc > 0  # ABINIT code
@@ -327,20 +324,17 @@ function libxc_string(header::Psp8Header)::String
     end
     return join(codes, ' ')
 end
-libxc_string(file::Psp8File)::String = libxc_string(file.header)
-function element(file::Psp8File)
-    return PeriodicTable.elements[Int(file.header.zatom)]
-end
-has_spin_orbit(file::Psp8File)::Bool = file.header.extension_switch in (2, 3)
-has_nlcc(file::Psp8File)::Bool = file.header.fchrg > 0
+
+identifier(file::Psp8File)::String = file.identifier
+format(::Psp8File)::String = "PSP8"
+element(file::Psp8File)::Element = PeriodicTable.elements[Int(file.header.zatom)]
+functional(file::Psp8File)::Vector{Functional} = map(s -> Functional(Symbol(lowercase(s))), split(libxc_string(file.header)))
+valence_charge(file::Psp8File)::Int = file.header.zion
 is_norm_conserving(file::Psp8File)::Bool = true
 is_ultrasoft(file::Psp8File)::Bool = false
 is_paw(file::Psp8File)::Bool = false
-ionic_charge(file::Psp8File) = file.header.zion
-max_angular_momentum(file::Psp8File)::Int = file.header.lmax
-n_projector_radials(file::Psp8File)::Int = sum(file.header.nproj, init=0)
-n_orbital_radials(file::Psp8File)::Int = 0
-valence_charge(file::Psp8File) = file.header.zion
+has_spin_orbit(file::Psp8File)::Bool = file.header.extension_switch in (2, 3)
+has_model_core_charge_density(file::Psp8File)::Bool = file.header.fchrg > 0
 
 function libxc_to_abinit_libxc(libxc_string::AbstractString)::Int
     abinit_libxc_int_str = "-" * prod(split(libxc_string)) do substring

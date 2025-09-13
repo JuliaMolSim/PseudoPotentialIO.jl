@@ -131,7 +131,7 @@ function load_family(family_name_or_dir::AbstractString)
         "Element" => element.(psp_files),
         "Filename" => psp_filenames,
         "Valence Charge" => valence_charge.(psp_files),
-        "NLCC" => has_nlcc.(psp_files),
+        "NLCC" => has_model_core_charge_density.(psp_files),
         "Spin Orbit" => has_spin_orbit.(psp_files),
         "Format" => typeof.(psp_files),
         "Formalism" => formalism.(psp_files),

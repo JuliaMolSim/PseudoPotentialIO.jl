@@ -107,14 +107,10 @@ function element(psp::HghFile)
     symbol = title[1]
     return haskey(PeriodicTable.elements, Symbol(symbol)) ? PeriodicTable.elements[Symbol(symbol)] : "??"
 end
-functional(psp::HghFile)::String = psp.functional
-functional_libxc(psp::HghFile)::String = functional(psp)
-has_spin_orbit(::HghFile)::Bool = false
-has_nlcc(::HghFile)::Bool = false
+functional(psp::HghFile)::Vector{Functional} = map(name -> Functional(Symbol(lowercase(name))), functional(psp))
+valence_charge(psp::HghFile)::Int = sum(psp.zion)
 is_norm_conserving(::HghFile)::Bool = true
 is_ultrasoft(::HghFile)::Bool = false
 is_paw(::HghFile)::Bool = false
-ionic_charge(psp::HghFile) = sum(psp.zion)
-max_angular_momentum(psp::HghFile)::Int = psp.lmax
-n_projector_radials(psp::HghFile)::Int = sum(length, psp.h, init=0)
-n_orbital_radials(psp::HghFile)::Int = 0
+has_spin_orbit(::HghFile)::Bool = false
+has_model_core_charge_density(::HghFile)::Bool = false
