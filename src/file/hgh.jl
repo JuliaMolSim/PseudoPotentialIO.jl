@@ -116,5 +116,5 @@ is_ultrasoft(::HghFile)::Bool = false
 is_paw(::HghFile)::Bool = false
 ionic_charge(psp::HghFile) = sum(psp.zion)
 max_angular_momentum(psp::HghFile)::Int = psp.lmax
-n_projector_radials(psp::HghFile)::Int = sum(length, psp.h)
+n_projector_radials(psp::HghFile)::Int = sum(length, psp.h, init=0)
 n_orbital_radials(psp::HghFile)::Int = 0

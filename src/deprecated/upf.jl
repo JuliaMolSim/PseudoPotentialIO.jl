@@ -64,7 +64,7 @@ function load_upf(io::IO)
                                        "index" => beta.index,
                                        "angular_momentum" => beta.angular_momentum,
                                        "cutoff_radius_index" => beta.cutoff_radius_index,
-                                       "radial_function" => beta.beta,
+                                       "radial_function" => beta.beta[1:beta.cutoff_radius_index],
                                        "cutoff_radius" => 0.0)
                                   for beta in new_upf.nonlocal.betas]
     old_upf["D_ion"] = new_upf.nonlocal.dij

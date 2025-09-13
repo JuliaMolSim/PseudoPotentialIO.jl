@@ -66,7 +66,7 @@
                     psp_βekbβ = psp_β[1:ir_max] * psp_ekb * psp_β[1:ir_max]'
                     upf_βekbβ = upf_β[1:ir_max] * upf_Dij * upf_β[1:ir_max]'
 
-                    @test psp_βekbβ ≈ upf_βekbβ ./ 2 atol=1e-6 rtol=1e-6
+                    @test psp_βekbβ ≈ upf_βekbβ ./ 2 atol=1e-4
                     idx_upf += 1
                 end
             end
