@@ -1,7 +1,7 @@
 name = "PseudoPotentialIO"
 uuid = "cb339c56-07fa-4cb2-923a-142469552264"
 authors = ["Austin Zadoks"]
-version = "0.2.0"
+version = "0.3.0"
 
 [deps]
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
