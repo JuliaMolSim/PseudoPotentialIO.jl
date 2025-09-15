@@ -75,7 +75,8 @@ function load_upf(io::IO)
         old_upf["atomic_wave_functions"] = [Dict("label" => chi.label,
                                                  "angular_momentum" => chi.l,
                                                  "occupation" => chi.occupation,
-                                                 "radial_function" => chi.chi)
+                                                 "radial_function" => chi.chi,
+                                                 "pseudo_energy" => chi.pseudo_energy)
                                             for chi in new_upf.pswfc]
     end
 
