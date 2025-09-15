@@ -151,7 +151,7 @@ UPF `<PP_NONLOCAL/PP_BETA.[i]>`
 """
 struct UpfBeta
     "Kleinman-Bylander nonlocal projector multiplied by the radial mesh, on the radial mesh"
-    beta::Vector{Float64}
+    beta::Vector{Float64}  # misnomer: actually r*β(r)!
     index::Union{Nothing,Int}
     angular_momentum::Int
     cutoff_radius_index::Union{Nothing,Int}
@@ -178,7 +178,7 @@ UPF `<PP_PSWFC/PP_CHI>`
 """
 struct UpfChi
     "Pseudo-atomic valence wavefunction on the radial mesh"
-    chi::Vector{Float64}
+    chi::Vector{Float64}  # misnomer: actually r*χ(r)!
     "Angular momentum"
     l::Int
     occupation::Float64
@@ -379,7 +379,7 @@ function libxc_string(header::UpfHeader)
     return join([exc, corr], ' ')
 end
 functional(file::UpfFile)::Vector{Functional} = map(s -> Functional(Symbol(lowercase(s))), split(libxc_string(file.header)))
-element(file::UpfFile) = PeriodicTable.elements[Symbol(file.header.element)]
+element(file::UpfFile)::PeriodicTable.Element = PeriodicTable.elements[Symbol(file.header.element)]
 is_norm_conserving(file::UpfFile)::Bool = file.header.pseudo_type == "NC"
 is_ultrasoft(file::UpfFile)::Bool = file.header.pseudo_type in ("US", "USPP")
 is_paw(file::UpfFile)::Bool = file.header.pseudo_type == "PAW"

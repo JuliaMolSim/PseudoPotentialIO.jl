@@ -101,14 +101,15 @@ end
 
 identifier(psp::HghFile)::String = psp.identifier
 format(::HghFile)::String = "HGH"
-function element(psp::HghFile)
+function element(psp::HghFile)::PeriodicTable.Element
+    # Guess the element from the title line, if possible
     title = split(psp.title)
-    isempty(title) && return "??"
+    isempty(title) && return PeriodicTable.Element()
     symbol = title[1]
-    return haskey(PeriodicTable.elements, Symbol(symbol)) ? PeriodicTable.elements[Symbol(symbol)] : "??"
+    return haskey(PeriodicTable.elements, Symbol(symbol)) ? PeriodicTable.elements[Symbol(symbol)] : PeriodicTable.Element()
 end
-functional(psp::HghFile)::Vector{Functional} = map(name -> Functional(Symbol(lowercase(name))), functional(psp))
-valence_charge(psp::HghFile)::Int = sum(psp.zion)
+functional(psp::HghFile)::Vector{Functional} = map(name -> Functional(Symbol(lowercase(name))), split(psp.functional))
+valence_charge(psp::HghFile)::Int = sum(psp.zion, init=0)
 is_norm_conserving(::HghFile)::Bool = true
 is_ultrasoft(::HghFile)::Bool = false
 is_paw(::HghFile)::Bool = false

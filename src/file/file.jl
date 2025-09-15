@@ -19,7 +19,7 @@ function format(file::PsPFile)::String end
 """
 The element which the pseudopotential was constructed to reproduce.
 """
-function element(file::PsPFile)::Element end
+function element(file::PsPFile)::PeriodicTable.Element end
 
 """
 Exchange-correlation functional in LibXC format.
@@ -60,6 +60,7 @@ function has_model_core_charge_density(file::PsPFile)::Bool end
 Formalism of the pseudopotential.
 """
 function formalism(file::PsPFile)::String
+    # Must be done in this order because some UPF PAW files also have is_ultrasoft == true
     is_paw(file) && return "projector-augmented wave"
     is_ultrasoft(file) && return "ultrasoft"
     is_norm_conserving(file) && return "norm-conserving"
@@ -72,7 +73,9 @@ function Base.show(io::IO, file::PsPFile)
     el = element(file)
     z = valence_charge(file)
     functional = map(f -> String(f.identifier), libxc_functional(file))
-    return print(io, "$typename(element=$el, z_valence=$z, xc=$functional)")
+    formalism = formalism(file)
+    nlcc = has_model_core_charge_density(file)
+    return print(io, "$typename(element=$el, z_valence=$z, xc=$functional, formalism=$formalism, nlcc=$nlcc)")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
@@ -81,6 +84,8 @@ function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
     @printf "%032s: %s\n" "format" format(file)
     @printf "%032s: %s\n" "element" element(file)
     @printf "%032s: %s\n" "exchange-correlation (Libxc)" join(map(f -> String(f.identifier), functional(file)), '+')
-    @printf "%032s: %s\n" "formalism" formalism(file)
+    @printf "%032s: %d\n" "valence charge" valence_charge(file)
+    @printf "%032s: %s\n" "spin-orbit coupling" has_spin_orbit(file)
     @printf "%032s: %s\n" "model core charge density" has_model_core_charge_density(file)
+    @printf "%032s: %s\n" "formalism" formalism(file)
 end

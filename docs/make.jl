@@ -14,8 +14,6 @@ PPIOBRANCH = try LibGit2.branch(LibGit2.GitRepo(ROOTPATH)) catch end
 PPIOGH     = "github.com/azadoks/PseudoPotentialIO.jl"
 PPIOREPO   = PPIOGH * ".git"
 PAGES = ["Home" => "index.md",
-         "Tutorial" => "tutorial.jl",
-         "Quantities" => "quantities.md",
          "Formats" => "formats.md",
          "api.md"]
 
