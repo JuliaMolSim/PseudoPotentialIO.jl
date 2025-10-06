@@ -36,6 +36,32 @@ struct Psp8Header
     nprojso::Union{Nothing,Vector{Int}}
 end
 
+function Base.show(io::IO, ::MIME"text/plain", header::Psp8Header)
+    println(io, typeof(header))
+    @printf "%032s: %s\n" "description" header.title
+    @printf "%032s: %0.6f\n" "atomic charge" header.zatom
+    @printf "%032s: %0.6f\n" "valence charge" header.zion
+    @printf "%032s: %06d\n" "generation date" header.pspd
+    @printf "%032s: %d\n" "PSP format version" header.pspcod
+    if header.pspxc > 0
+        @printf "%032s: %d\n" "exchange-correlation (ABINIT)" header.pspxc
+    else
+        @printf "%032s: %d\n" "exchange-correlation (LibXC)" header.pspxc
+    end
+    @printf "%032s: %d\n" "max angular momentum" header.lmax
+    @printf "%032s: %d\n" "local potential angular momentum" header.lloc
+    @printf "%032s: %d\n" "radial mesh size" header.mmax
+    @printf "%032s: %0.6f\n" "r2well" header.r2well
+    @printf "%032s: %0.6f\n" "core charge radius" header.rchrg
+    @printf "%032s: %0.6f\n" "model core charge present" header.fchrg
+    @printf "%032s: %0.6f\n" "qchrg" header.qchrg
+    @printf "%032s: %s\n" "number of projectors" join(header.nproj, ", ")
+    @printf "%032s: %d\n" "extension switch" header.extension_switch
+    if header.extension_switch in (2, 3)
+        @printf "%032s: %s\n" "number of spin-orbit projectors" join(header.nprojso, ", ")
+    end
+end
+
 function psp8_parse_header(io::IO)
     # Line 1 contains the title / comment describing the pseudopotential
     title = readline(io)

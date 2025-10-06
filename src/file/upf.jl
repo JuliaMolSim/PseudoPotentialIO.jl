@@ -20,7 +20,7 @@ struct UpfHeader <: PsPFile
     is_coulomb::Bool
     "True if fully-relativistic with spin-orbit terms"
     has_so::Bool
-    "True if all-electron wavefunctions present"
+    "True if pseudo-atomic wavefunctions present"
     has_wfc::Bool
     "True if data for GIPAW reconstruction is present"
     has_gipaw::Bool
@@ -50,6 +50,53 @@ struct UpfHeader <: PsPFile
     number_of_wfc::Int
     "Number of Kleinman-Bylander nonlocal projectors"
     number_of_proj::Int
+end
+
+function Base.show(io::IO, ::MIME"text/plain", header::UpfHeader)
+    println(io, typeof(header))
+    if !isnothing(header.generated)
+        @printf "%032s: %s\n" "generated" header.generated
+    end
+    if !isnothing(header.author)
+        @printf "%032s: %s\n" "author" header.author
+    end
+    if !isnothing(header.date)
+        @printf "%032s: %s\n" "date" header.date
+    end
+    @printf "%032s: %s\n" "element" header.element
+    @printf "%032s: %s\n" "pseudopotential type" header.pseudo_type
+    if !isnothing(header.relativistic)
+        @printf "%032s: %s\n" "relativistic treatment" header.relativistic
+    end
+    @printf "%032s: %s\n" "is ultrasoft" header.is_ultrasoft
+    @printf "%032s: %s\n" "is PAW" header.is_paw
+    @printf "%032s: %s\n" "is bare Coulomb" header.is_coulomb
+    @printf "%032s: %s\n" "has spin-orbit" header.has_so
+    @printf "%032s: %s\n" "has pseudo-atomic wavefunctions" header.has_wfc
+    @printf "%032s: %s\n" "has GIPAW data" header.has_gipaw
+    if !isnothing(header.paw_as_gipaw)
+        @printf "%032s: %s\n" "PAW as GIPAW" header.paw_as_gipaw
+    end
+    @printf "%032s: %s\n" "has non-linear core correction" header.core_correction
+    @printf "%032s: %s\n" "functional (QuantumESPRESSO)" header.functional
+    @printf "%032s: %.6f\n" "valence charge" header.z_valence
+    if !isnothing(header.total_psenergy)
+        @printf "%032s: %.6f\n" "total pseudo energy" header.total_psenergy
+    end
+    if !isnothing(header.wfc_cutoff)
+        @printf "%032s: %.6f Ry\n" "suggested wavefunction cutoff" header.wfc_cutoff
+    end
+    if !isnothing(header.rho_cutoff)
+        @printf "%032s: %.6f Ry\n" "suggested charge density cutoff" header.rho_cutoff
+    end
+    @printf "%032s: %d\n" "max angular momentum" header.l_max
+    if !isnothing(header.l_max_rho)
+        @printf "%032s: %d\n" "max angular momentum in charge density (PAW)" header.l_max_rho
+    end
+    @printf "%032s: %d\n" "local potential angular momentum" header.l_local
+    @printf "%032s: %d\n" "radial mesh size" header.mesh_size
+    @printf "%032s: %d\n" "number of pseudo wavefunctions" header.number_of_wfc
+    @printf "%032s: %d\n" "number of KB projectors" header.number_of_proj
 end
 
 """
@@ -293,7 +340,7 @@ struct UpfFile <: PsPFile
     "Nonlocal part of the pseudopotential"
     nonlocal::UpfNonlocal
     "Pseudo-atomic valence wavefunctions"
-    pswfc::Union{Nothing,Vector{UpfChi}}
+    pswfc::Vector{UpfChi}
     "All-electron wavefunctions"
     full_wfc::Union{Nothing,UpfFullWfc}
     "Pseudo-atomic valence charge density on the radial grid with prefactor 4πr²"

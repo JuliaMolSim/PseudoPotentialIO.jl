@@ -35,7 +35,6 @@ function upf2_parse_psp(io::IO; identifier="")
     pswfc_node = findfirst("PP_PSWFC", root_node)
     pswfc = [upf2_parse_chi(n)
              for n in eachnode(pswfc_node) if occursin("PP_CHI.", nodename(n))]
-    pswfc = isempty(pswfc) ? nothing : pswfc  # Sometimes the section exists but is empty
     #* PP_FULL_WFC
     if isnothing(findfirst("PP_FULL_WFC", root_node))
         full_wfc = nothing

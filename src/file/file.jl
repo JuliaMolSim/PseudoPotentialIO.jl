@@ -86,6 +86,6 @@ function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
     @printf "%032s: %s\n" "exchange-correlation (Libxc)" join(map(f -> String(f.identifier), functional(file)), '+')
     @printf "%032s: %d\n" "valence charge" valence_charge(file)
     @printf "%032s: %s\n" "spin-orbit coupling" has_spin_orbit(file)
-    @printf "%032s: %s\n" "model core charge density" has_model_core_charge_density(file)
     @printf "%032s: %s\n" "formalism" formalism(file)
+    @printf "%032s: %s\n" "model core charge density" has_model_core_charge_density(file)
 end
