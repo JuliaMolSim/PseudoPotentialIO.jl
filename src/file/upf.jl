@@ -28,6 +28,8 @@ struct UpfHeader <: PsPFile
     paw_as_gipaw::Union{Nothing,Bool}
     "True if non-linear core correction is included"
     core_correction::Bool
+    "True if data for meta-GGA functionals is present"
+    has_metagga::Bool
     "QuantumEspresso exchange-correlation identifiers"
     functional::String
     "Pseudo-atomic charge"
@@ -77,6 +79,7 @@ function Base.show(io::IO, ::MIME"text/plain", header::UpfHeader)
     if !isnothing(header.paw_as_gipaw)
         @printf "%032s: %s\n" "PAW as GIPAW" header.paw_as_gipaw
     end
+    @printf "%032s: %s\n" "has meta-GGA data" header.has_metagga
     @printf "%032s: %s\n" "has non-linear core correction" header.core_correction
     @printf "%032s: %s\n" "functional (QuantumESPRESSO)" header.functional
     @printf "%032s: %.6f\n" "valence charge" header.z_valence
@@ -333,7 +336,7 @@ struct UpfFile <: PsPFile
     header::UpfHeader
     "Radial mesh, mesh integration factors, and other mesh information"
     mesh::UpfMesh
-    "Pseudized core charge on the radial grid, (ignored if `core_correction` is false)"
+    "Model core charge density on the radial grid, (ignored if `core_correction` is false)"
     nlcc::Union{Nothing,Vector{Float64}}
     "Local part of the pseudopotential on the radial grid (ignored if `is_coulomb`)"
     local_::Union{Nothing,Vector{Float64}}
@@ -345,6 +348,10 @@ struct UpfFile <: PsPFile
     full_wfc::Union{Nothing,UpfFullWfc}
     "Pseudo-atomic valence charge density on the radial grid with prefactor 4πr²"
     rhoatom::Vector{Float64}
+    "Pseudo-atomic valence kinetic energy density on the radial grid"
+    tauatom::Union{Nothing,Vector{Float64}}
+    "Model core kinetic energy density on the radial grid"
+    taumod::Union{Nothing,Vector{Float64}}
     "Spin-orbit coupling data, (ignored if `has_so` is false)"
     spin_orb::Union{Nothing,UpfSpinOrb}
     "PAW data, (ignored if `is_paw` is false)"
@@ -370,6 +377,14 @@ function UpfFile(io::IO; identifier="")
     end
     error("Unknown UPF version.")
 end
+
+
+function _get_upf_version(text::String)::VersionNumber
+    m = match(r"\s*<UPF\s+version\s*=\"(.*)\">", text)
+    isnothing(m) && return VersionNumber("1.0.0")
+    return parse(VersionNumber, m.captures[1])
+end
+
 
 function _get_upf_version(io::IO)::Int
     pos = position(io)

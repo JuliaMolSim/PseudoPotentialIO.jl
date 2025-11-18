@@ -50,7 +50,9 @@ include("file/file.jl")
 export UpfFile
 include("file/upf.jl")
 include("file/upf1.jl")
+include("file/upf1_dict.jl")
 include("file/upf2.jl")
+include("file/upf2_dict.jl")
 
 export Psp8File
 include("file/psp8.jl")

@@ -44,6 +44,20 @@ function upf2_parse_psp(io::IO; identifier="")
     #* PP_RHOATOM
     rhoatom_node = findfirst("PP_RHOATOM", root_node)
     rhoatom = parse_nodecontent(Float64, rhoatom_node)
+    #* PP_TAUMOD
+    taumod_node = findfirst("PP_TAUMOD", root_node)
+    if isnothing(taumod_node)
+        taumod = nothing
+    else
+        taumod = parse_nodecontent(Float64, taumod_node)
+    end
+    #* PP_TAUATOM
+    tauatom_node = findfirst("PP_TAUATOM", root_node)
+    if isnothing(tauatom_node)
+        tauatom = nothing
+    else
+        tauatom = parse_nodecontent(Float64, tauatom_node)
+    end
     #* PP_SPINORB
     if isnothing(findfirst("PP_SPIN_ORB", root_node))
         spinorb = nothing
@@ -64,7 +78,7 @@ function upf2_parse_psp(io::IO; identifier="")
     end
 
     return UpfFile(identifier, version, info, header, mesh, nlcc, local_,
-                   nonlocal, pswfc, full_wfc, rhoatom, spinorb, paw, gipaw)
+                   nonlocal, pswfc, full_wfc, rhoatom, taumod, tauatom, spinorb, paw, gipaw)
 end
 
 function upf2_parse_header(node::EzXML.Node)
@@ -85,6 +99,7 @@ function upf2_parse_header(node::EzXML.Node)
     has_gipaw = get_attr(Bool, node, "has_gipaw")
     paw_as_gipaw = get_attr(Bool, node, "paw_as_gipaw")
     core_correction = get_attr(Bool, node, "core_correction")
+    has_metagga = get_attr(Bool, node, "has_metagga"; default=false)
     functional = join(filter(!isempty, split(get_attr(String, node, "functional"), functional_dlm)), ' ')
     z_valence = get_attr(Float64, node, "z_valence")
     total_psenergy = get_attr(Float64, node, "total_psenergy")
@@ -101,7 +116,7 @@ function upf2_parse_header(node::EzXML.Node)
 
     return UpfHeader(generated, author, date, comment, element, pseudo_type,
                      relativistic, is_ultrasoft, is_paw, is_coulomb, has_so, has_wfc,
-                     has_gipaw, paw_as_gipaw, core_correction, functional, z_valence,
+                     has_gipaw, paw_as_gipaw, core_correction, has_metagga, functional, z_valence,
                      total_psenergy, wfc_cutoff, rho_cutoff, l_max, l_max_rho, l_local,
                      mesh_size, number_of_wfc, number_of_proj)
 end

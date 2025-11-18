@@ -25,8 +25,10 @@ function upf1_parse_psp(io::IO; identifier="")
     end
     paw = nothing  # Not supported by UPF v1
     gipaw = nothing  # Not supported by UPF v1
+    taumod = nothing  # Not supported by UPF v1
+    tauatom = nothing  # Not supported by UPF v1
     return UpfFile(identifier, version, info, header, mesh, nlcc, local_,
-                   nonlocal, pswfc, full_wfc, rhoatom, spinorb, paw, gipaw)
+                   nonlocal, pswfc, full_wfc, rhoatom, taumod, tauatom, spinorb, paw, gipaw)
 end
 
 """
@@ -145,13 +147,13 @@ function upf1_parse_header(io::IO)
     has_gipaw = false
     relativistic = has_so ? "full" : "scalar"
     has_wfc = false
+    has_metagga = false
 
     return UpfHeader(generated, author, date, comment, element, pseudo_type, relativistic,
                      is_ultrasoft, is_paw, is_coulomb, has_so, has_wfc, has_gipaw,
-                     paw_as_gipaw,
-                     core_correction, functional, z_valence, total_psenergy, wfc_cutoff,
-                     rho_cutoff, l_max, l_max_rho, l_local, mesh_size, number_of_wfc,
-                     number_of_proj)
+                     paw_as_gipaw, core_correction, has_metagga, functional, z_valence,
+                     total_psenergy, wfc_cutoff, rho_cutoff, l_max, l_max_rho, l_local,
+                     mesh_size, number_of_wfc, number_of_proj)
 end
 
 function upf1_parse_mesh(io::IO, mesh_size::Int)
