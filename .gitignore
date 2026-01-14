@@ -3,3 +3,5 @@
 *.UPF
 *.psp8
 *.json
+
+_test/*
