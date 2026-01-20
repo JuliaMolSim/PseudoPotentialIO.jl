@@ -1,9 +1,6 @@
 module PseudoPotentialIO
-using Artifacts
 using EzXML
-using LazyArtifacts
 using Printf
-using SHA
 using PeriodicTable
 using Statistics
 using Libxc: Functional
