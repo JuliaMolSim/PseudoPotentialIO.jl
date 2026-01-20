@@ -68,21 +68,6 @@ function upf2_parse_psp(io::IO; identifier="")
                    nonlocal, pswfc, full_wfc, rhoatom, spinorb, paw, gipaw)
 end
 
-function upf2_parse_psp(io::IO)
-    checksum = SHA.sha1(io)
-    seek(io, 0)
-
-    text = read(io, String)
-    # Remove end-of-file junk (input data, etc.)
-    text = string(split(text, "</UPF>")[1], "</UPF>")
-    # Clean any errant `&` characters
-    text = replace(text, "&amp;" => "")
-    text = replace(text, "&" => "")
-    doc = parsexml(text)
-
-    return upf2_parse_psp(doc, checksum)
-end
-
 function upf2_dump_psp(upffile::UpfFile)::EzXML.Node
     root_node = ElementNode("UPF")
     set_attr!(root_node, "version", "2.0.1")
