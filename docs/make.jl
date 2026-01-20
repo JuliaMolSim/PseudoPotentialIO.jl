@@ -65,11 +65,10 @@ makedocs(;
          format=Documenter.HTML(;
                                 prettyurls=CONTINUOUS_INTEGRATION,
                                 canonical="https://azadoks.github.io/PseudoPotentialIO.jl",
-                                edit_link="master",
+                                edit_link="main",
                                 assets=String[]),
          pages=transform_to_md(PAGES),
-         checkdocs=:exports,
-         strict=!DEBUG)
+         checkdocs=:exports)
 
 # Deploy docs to gh-pages branch
 deploydocs(; repo=PPIOREPO, devbranch="main")
