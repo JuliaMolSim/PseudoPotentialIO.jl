@@ -392,9 +392,10 @@ function save_psp_file(path::AbstractString, psp::UpfFile, version::Int)
 end
 
 function _get_upf_version(io::IO)::Int
-    seek(io, 0)
+    pos = position(io)
     line1 = readline(io)
     line2 = readline(io)
+    seek(io, pos)
     if occursin("<PP_INFO>", line1)
         # Old UPF files start with the `<PP_INFO>` section
         return 1

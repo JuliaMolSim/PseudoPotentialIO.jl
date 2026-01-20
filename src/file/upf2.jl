@@ -2,8 +2,6 @@ function upf2_parse_psp(io::IO; identifier="")
     text = read(io, String)
     # Remove end-of-file junk (input data, etc.)
     text = string(split(text, "</UPF>")[1], "</UPF>")
-    # Clean any errant `&` characters
-    text = replace(text, "&" => "")
     doc = parsexml(text)
 
     root_node = root(doc)
@@ -715,6 +713,58 @@ end
 
 function get_attr(::Type{Bool}, node::EzXML.Node, key; default=nothing)::Union{Nothing,Bool}
     return haskey(node, key) ? parse_bool(strip(node[key])) : default
+end
+
+"""
+convert a vector to a string with line break every `width` elements
+"""
+function array_to_text(v::AbstractVector; width::Int=4)::AbstractString
+    s = "\n"
+    for i in eachindex(v)
+        s *= @sprintf("%20.14E", v[i]) * ' '
+        if i % width == 0
+            s *= '\n'
+        end
+    end
+    s *= '\n'
+
+    return s
+end
+
+"""
+convert a matrix to a string
+"""
+function array_to_text(m::AbstractMatrix)::AbstractString
+    s = "\n"
+    for row in eachrow(m)
+        for el in row
+            s *= @sprintf("%20.14E", el) * ' '
+        end
+        s *= '\n'
+    end
+
+    s
+end
+
+function set_attr!(node::EzXML.Node, key::String, value::Any)
+    # Convert Bool to Fortran-style T/F
+    if isa(value, Bool)
+        value = value ? "T" : "F"
+    end
+
+    # Convert Float64 to Fortran-style D
+    if isa(value, Float64)
+        value = replace(string(value), "E" => "D")
+    end
+
+    # skip if value is nothing
+    if !isnothing(value)
+        node[key] = value
+    end
+end
+
+function set_attr!(node::EzXML.Node, key::Symbol, value::Any)
+    set_attr!(node, string(key), value)
 end
 
 function parse_nodecontent(::Type{T}, node::EzXML.Node) where {T}

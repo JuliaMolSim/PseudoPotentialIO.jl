@@ -77,7 +77,7 @@
                     @test length(chi.chi) == file.header.mesh_size
                 end
             else
-                @test isnothing(file.pswfc)
+                @test isempty(file.pswfc)
             end
 
             if file.header.has_wfc

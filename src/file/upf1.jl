@@ -331,7 +331,7 @@ function upf1_parse_nonlocal(io::IO, pseudo_type::String, mesh_size::Int,
                              number_of_proj::Int, l_max::Int)
     # The `PP_NONLOCAL` superblock contains the KB non-local projectors, projector coupling
     # coefficients, and (sometimes) augmentation charges
-    betas = upf1_parse_betas(io, number_of_proj)
+    betas = upf1_parse_betas(io, number_of_proj, mesh_size)
     dij = upf1_parse_dij(io, number_of_proj)
     if pseudo_type in ("US", "USPP", "PAW")  # Ultrasoft and PAW have augmentation charges
         augmentation = upf1_parse_augmentation(io, mesh_size, number_of_proj, l_max)

@@ -5,7 +5,7 @@
     ]
 
     pseudo_pairs = [(
-        json=JSON.parsefile("./deprecated/fixtures/json/Fe_nc-sr-04_pbe_standard.json")["pseudo_potential"],
+        json=JSON.parsefile(joinpath(@__DIR__, "fixtures/json/Fe_nc-sr-04_pbe_standard.json"))["pseudo_potential"],
         upf=load_upf(joinpath(artifact"pd_nc_sr_pbe_standard_0.4.1_upf", "Fe.upf"))
     )]
 
