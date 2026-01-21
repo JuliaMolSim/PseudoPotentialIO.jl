@@ -72,10 +72,9 @@ function Base.show(io::IO, file::PsPFile)
     typename = string(typeof(file))
     el = element(file)
     z = valence_charge(file)
-    functional = map(f -> String(f.identifier), libxc_functional(file))
-    formalism = formalism(file)
+    xc = map(f -> String(f.identifier), functional(file))
     nlcc = has_model_core_charge_density(file)
-    return print(io, "$typename(element=$el, z_valence=$z, xc=$functional, formalism=$formalism, nlcc=$nlcc)")
+    return print(io, "$typename(element=$el, z_valence=$z, xc=$xc, formalism=$(formalism(file)), nlcc=$nlcc)")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
