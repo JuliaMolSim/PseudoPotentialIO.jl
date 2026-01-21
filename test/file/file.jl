@@ -4,7 +4,7 @@
         @test isa(identifier(file), AbstractString)
         @test isa(format(file), AbstractString)
         @test isa(element(file), Element)
-        @test all(isa.(functional(file), Functional))
+        @test all(isa.(functional(file), Symbol))
         @test isa(valence_charge(file), Int)
         @test 0 <= valence_charge(file)
         @test isa(is_norm_conserving(file), Bool)

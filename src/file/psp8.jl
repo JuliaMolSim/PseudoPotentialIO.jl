@@ -354,7 +354,7 @@ end
 identifier(file::Psp8File)::String = file.identifier
 format(::Psp8File)::String = "PSP8"
 element(file::Psp8File)::PeriodicTable.Element = PeriodicTable.elements[Int(file.header.zatom)]
-functional(file::Psp8File)::Vector{Functional} = map(s -> Functional(Symbol(lowercase(s))), split(libxc_string(file.header)))
+functional(file::Psp8File)::Vector{Symbol} = map(s -> Symbol(lowercase(s)), split(libxc_string(file.header)))
 valence_charge(file::Psp8File)::Int = file.header.zion
 is_norm_conserving(file::Psp8File)::Bool = true
 is_ultrasoft(file::Psp8File)::Bool = false

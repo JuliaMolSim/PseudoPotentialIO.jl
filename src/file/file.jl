@@ -22,9 +22,9 @@ The element which the pseudopotential was constructed to reproduce.
 function element(file::PsPFile)::PeriodicTable.Element end
 
 """
-Exchange-correlation functional in LibXC format.
+Exchange-correlation functional identifiers (Libxc-compatible), or empty if unknown.
 """
-function functional(file::PsPFile)::Vector{Functional} end
+function functional(file::PsPFile)::Vector{Symbol} end
 
 """
 Pseudo-atomic core charge.
@@ -72,7 +72,7 @@ function Base.show(io::IO, file::PsPFile)
     typename = string(typeof(file))
     el = element(file)
     z = valence_charge(file)
-    xc = map(f -> String(f.identifier), functional(file))
+    xc = functional(file)
     nlcc = has_model_core_charge_density(file)
     return print(io, "$typename(element=$el, z_valence=$z, xc=$xc, formalism=$(formalism(file)), nlcc=$nlcc)")
 end
@@ -82,7 +82,7 @@ function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
     @printf "%032s: %s\n" "identifier" identifier(file)
     @printf "%032s: %s\n" "format" format(file)
     @printf "%032s: %s\n" "element" element(file)
-    @printf "%032s: %s\n" "exchange-correlation (Libxc)" join(map(f -> String(f.identifier), functional(file)), '+')
+    @printf "%032s: %s\n" "exchange-correlation (Libxc)" join(functional(file), '+')
     @printf "%032s: %d\n" "valence charge" valence_charge(file)
     @printf "%032s: %s\n" "spin-orbit coupling" has_spin_orbit(file)
     @printf "%032s: %s\n" "formalism" formalism(file)

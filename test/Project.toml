@@ -2,7 +2,6 @@
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
 LazyArtifacts = "4af54fe1-eca0-43a8-85a7-787d91b784e3"
-Libxc = "66e17ffc-8502-11e9-23b5-c9248d0eb96d"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
 PseudoPotentialIO = "cb339c56-07fa-4cb2-923a-142469552264"
@@ -12,4 +11,3 @@ Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 [compat]
 Aqua = "0.8"
 PeriodicTable = "1"
-Libxc = "0.3"

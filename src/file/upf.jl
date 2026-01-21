@@ -448,7 +448,7 @@ function libxc_string(header::UpfHeader)
 
     return join([exc, corr], ' ')
 end
-functional(file::UpfFile)::Vector{Functional} = map(s -> Functional(Symbol(lowercase(s))), split(libxc_string(file.header)))
+functional(file::UpfFile)::Vector{Symbol} = map(s -> Symbol(lowercase(s)), split(libxc_string(file.header)))
 element(file::UpfFile)::PeriodicTable.Element = PeriodicTable.elements[Symbol(file.header.element)]
 is_norm_conserving(file::UpfFile)::Bool = file.header.pseudo_type == "NC"
 is_ultrasoft(file::UpfFile)::Bool = file.header.pseudo_type in ("US", "USPP")

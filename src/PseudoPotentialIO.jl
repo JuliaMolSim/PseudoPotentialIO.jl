@@ -3,7 +3,6 @@ using EzXML
 using Printf
 using PeriodicTable
 using Statistics
-using Libxc: Functional
 
 using PeriodicTable: PeriodicTable
 import Base.Broadcast.broadcastable

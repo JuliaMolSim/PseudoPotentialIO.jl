@@ -6,7 +6,6 @@ using PeriodicTable
 using JSON
 using LinearAlgebra
 using Random
-using Libxc: Functional
 
 Random.seed!(0)
 
