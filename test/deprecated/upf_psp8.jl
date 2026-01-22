@@ -1,5 +1,5 @@
 @testset "PSP8--UPF" begin
-    pseudo_pairs = [(upf=load_upf(pair[1]), psp=load_psp8(pair[2])) for pair in UPF2_PSP8_FILEPATHS]
+    pseudo_pairs = [(upf=load_upf(pair[2]), psp=load_psp8(pair[3])) for pair in UPF2_PSP8_FILEPATHS]
 
     @testset "header" begin
         for pair in pseudo_pairs

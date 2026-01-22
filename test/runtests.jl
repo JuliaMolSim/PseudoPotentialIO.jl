@@ -45,6 +45,10 @@ include("fixtures.jl")
         include("file/hgh.jl")
     end
 
+    if any(in.(("all", "agreement"), Ref(TAGS)))
+        include("upf_psp8_agreement.jl")
+    end
+
     if any(in.(("all", "deprecated"), Ref(TAGS)))
         include("deprecated/upf.jl")
         include("deprecated/upf_json.jl")

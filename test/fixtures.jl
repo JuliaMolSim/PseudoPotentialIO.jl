@@ -205,14 +205,14 @@ UPF2_HGH_FILEPATHS = map(UPF2_HGH_PAIRS) do (upf2_filename, hgh_filename)
 end
 
 UPF2_PSP8_ELEMENTS = ("Ag", "Al", "Ar", "As", "Au", "B", "Ba", "Be", "Bi", "Br", "C", "Ca",
-                      # "Cr", "Cu", # TODO Chromium and Copper agreement is terrible for some reason
-                      "Cd", "Cl", "Co", "Cs", "F", "Fe", "Ga", "Ge", "H", "He",
+                      "Cr", "Cu", "Cd", "Cl", "Co", "Cs", "F", "Fe", "Ga", "Ge", "H", "He",
                       "Hf", "Hg", "I", "In", "Ir", "K", "Kr", "La", "Li", "Lu", "Mg", "Mn",
                       "Mo", "N", "Na", "Nb", "Ne", "Ni", "O", "Os", "P", "Pb", "Pd", "Po",
                       "Pt", "Rb", "Re", "Rh", "Rn", "Ru", "S", "Sb", "Sc", "Se", "Si", "Sn",
                       "Sr", "Ta", "Tc", "Te", "Ti", "Tl", "V", "W", "Xe", "Y", "Zn", "Zr")
 UPF2_PSP8_FILEPATHS = map(UPF2_PSP8_ELEMENTS) do element
     (
+        element,
         joinpath(_resolve_family("pd_nc_sr_pbe_standard_0.4.1_upf"), "$(element).upf"),
         joinpath(_resolve_family("pd_nc_sr_pbe_standard_0.4.1_psp8"), "$(element).psp8")
     )
