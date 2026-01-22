@@ -1,7 +1,7 @@
 name = "PseudoPotentialIO"
 uuid = "cb339c56-07fa-4cb2-923a-142469552264"
-authors = ["Austin Zadoks"]
 version = "0.3.0"
+authors = ["Austin Zadoks"]
 
 [deps]
 Artifacts = "56f22d72-fd6d-98f1-02f0-08ddc0907c33"
@@ -13,21 +13,23 @@ LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 PeriodicTable = "7b2266bf-644c-5ea3-82d8-af4bbd25a884"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+Serde = "db9b398d-9517-45f8-9a95-92af99003e0e"
 Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
 
 [compat]
 Artifacts = "1"
 DocStringExtensions = "0.9"
 EzXML = "1"
+JuliaFormatter = "2"
 LazyArtifacts = "1"
-LinearAlgebra = "1"
 Libxc = "0.3"
+LinearAlgebra = "1"
 PeriodicTable = "1"
 Printf = "1"
 SHA = "0.7"
+Serde = "3.7.0"
 Statistics = "1"
 Test = "1"
-JuliaFormatter = "2"
 julia = "1.6"
 
 [extras]

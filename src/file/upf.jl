@@ -378,33 +378,33 @@ function UpfFile(io::IO; identifier="")
     error("Unknown UPF version.")
 end
 
-
-function _get_upf_version(text::String)::VersionNumber
+function _get_upf_version(text::AbstractString)::VersionNumber
+    if isfile(text)
+        open(text, "r") do io
+            return _get_upf_version(io)
+        end
+    end
     m = match(r"\s*<UPF\s+version\s*=\"(.*)\">", text)
     isnothing(m) && return VersionNumber("1.0.0")
     return parse(VersionNumber, m.captures[1])
 end
 
-
-function _get_upf_version(io::IO)::Int
+function _get_upf_version(io::IO)::VersionNumber
     pos = position(io)
     seek(io, 0)
     line = readline(io)
+    while !occursin("<", line)
+        line = readline(io)
+    end
     seek(io, pos)
     if occursin("<PP_INFO>", line)
         # Old UPF files start with the `<PP_INFO>` section
-        return 1
+        return VersionNumber("1.0.0")
     elseif occursin("UPF version=\"2.0.1\"", line)
         # New UPF files with schema are in XML and start with a version tag
-        return 2
+        return VersionNumber("2.0.1")
     else
         error("Unknown UPF version")
-    end
-end
-
-function _get_upf_version(path::AbstractString)::Int
-    open(path, "r") do io
-        return _get_upf_version(io)
     end
 end
 
