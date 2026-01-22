@@ -62,4 +62,7 @@ include("load.jl")
 export save_psp_file
 include("save.jl")
 
+# Conversion
+include("conversion/to_upf.jl")
+
 end
