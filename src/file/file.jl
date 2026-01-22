@@ -3,187 +3,88 @@ Abstract type representing a pseudopotential file.
 
 The structure of the data should closely mirror the format of the file, and the values
 of quantities should be exactly those found in the file.
-
-Required methods:
-
-```julia
-# A unique string, usually a hash or checksum.
-function identifier(file::PsPFile)::AbstractString end
-# A short string listing the file format (e.g. `"PSP8"`)
-function format(file::PsPFile)::AbstractString end
-# The symbol of the element for which the file contains a pseudopotential (e.g. `"Ag"`)
-function elemental_symbol(file::PsPFile)::AbstractString end
-# The maximum angular momentum channel contained in the file
-function max_angular_momentum(file::PsPFile)::Integer end
-# The number of non-local projectors for angular momentum `l` contained in the file
-function n_projector_radials(file::PsPFile, l::Integer)::Integer end
-# The number of chi functions for angular momentum `l` contained in the file
-function n_chi_function_radials(file::PsPFile, l::Integer)::Integer end
-# The pseudo-atomic valence charge
-function valence_charge(file::PsPFile)::Real end
-# Whether the file contains a norm-conserving pseudopotential
-function is_norm_conserving(file::PsPFile)::Bool end
-# Whether the file contains an ultrasoft pseudopotential
-function is_ultrasoft(file::PsPFile)::Bool end
-# Whether the file contains a projector-augmented wave pseudopotential
-function is_paw(file::PsPFile)::Bool end
-# Whether the file contains a pseudopotential supporting spin-orbit coupled calculations
-function has_spin_orbit(file::PsPFile)::Bool end
-# Whether the file contains a pseudopotential supporting non-linear core corrections
-function has_core_density(file::PsPFile)::Bool end
-```
 """
 abstract type PsPFile end
 
-#!!! Required functions !!!#
 """
-Identifying data (preferably unique).
+Identifying data.
 """
-function identifier(file::PsPFile) end
+function identifier(file::PsPFile)::String end
 
 """
 Pseudopotential file format.
 """
-function format(file::PsPFile) end
+function format(file::PsPFile)::String end
 
 """
-Short symbol of the element which the pseudopotential was constructed to reproduce.
+The element which the pseudopotential was constructed to reproduce.
 """
-function elemental_symbol(file::PsPFile) end
+function element(file::PsPFile)::PeriodicTable.Element end
 
 """
-Maximum angular momentum channel in the local part of the pseudopotential.
+Exchange-correlation functional identifiers (Libxc-compatible), or empty if unknown.
 """
-function max_angular_momentum(file::PsPFile) end
+function functional(file::PsPFile)::Vector{Symbol} end
 
 """
-Number of radial parts of the Kleinman-Bylander projectors `Rl(r)` at a given angular
-momentum.
+Pseudo-atomic core charge.
 """
-function n_projector_radials(file::PsPFile, l) end
-
-"""
-Number of radial parts of the chi-functions with angular momentum `l`.
-"""
-function n_chi_function_radials(file::PsPFile, l) end
-
-"""
-Pseudo-atomic valence charge.
-"""
-function valence_charge(file::PsPFile) end
+function valence_charge(file::PsPFile)::Int end
 
 """
 Whether the pseudopotential is of the norm-conserving kind.
 """
-function is_norm_conserving(file::PsPFile) end
+function is_norm_conserving(file::PsPFile)::Bool end
 
 """
 Whether the pseudopotential is of the ultrasoft kind.
 """
-function is_ultrasoft(file::PsPFile) end
+function is_ultrasoft(file::PsPFile)::Bool end
 
 """
 Whether the pseudopotential is of the plane-augmented wave kind.
 """
-function is_paw(file::PsPFile) end
+function is_paw(file::PsPFile)::Bool end
 
 """
 Whether the pseudopotential contains relativistic spin-orbit coupling data.
 """
-function has_spin_orbit(file::PsPFile) end
+function has_spin_orbit(file::PsPFile)::Bool end
 
 """
-Whether the pseudopotential contains non-linear core correction data (model core charge
-density).
+Whether the pseudopotential contains a model core charge density used in non-linear core correction.
 """
-function has_core_density(file::PsPFile) end
+function has_model_core_charge_density(file::PsPFile)::Bool end
 
-#!!! Convenience functions !!!#
 """
 Formalism of the pseudopotential.
 """
-function formalism(file::PsPFile)::Type
-    is_paw(file) && return ProjectorAugmentedWavePsP
-    is_ultrasoft(file) && return UltrasoftPsP
-    is_norm_conserving(file) && return NormConservingPsP
-end
-
-"""
-Type of relativistic treatment (fully relativistic or scalar-relativistic).
-"""
-relativistic_treatment(file::PsPFile)::Symbol = has_spin_orbit(file) ? :full : :scalar
-
-"""
-Number of radial parts of the Kleinman-Bylander nonlocal projectors at all angular momenta
-up to the maximum angular momentum channel.
-"""
-function n_projector_radials(file::PsPFile)
-    return sum(l -> n_projector_radials(file, l), 0:max_angular_momentum(file); init=0)
-end
-
-"""
-Number of angular parts `Yₗₘ(r̂)` of the Kleinman-Bylander projectors `Rₗₙ(|r|)Yₗₘ(r̂)` at a
-given angular momentum `l`.
-"""
-function n_projector_angulars(file::PsPFile, l)
-    # for angular momentum l, magnetic q.n. m ∈ -l:l
-    return n_projector_radials(file, l) * (2l + 1)
-end
-
-"""
-Number of angular parts of the Kleinman-Bylander projectors at all angular momenta up
-to the maximum angular momentum channel.
-"""
-function n_projector_angulars(file::PsPFile)
-    return sum(l -> n_projector_angulars(file, l), 0:max_angular_momentum(file); init=0)
-end
-
-"""
-Number chi-functions at all angular momenta up to the maximum angular momentum
-channel.
-"""
-function n_chi_function_radials(file::PsPFile)
-    return sum(l -> n_chi_function_radials(file, l), 0:max_angular_momentum(file); init=0)
-end
-
-"""
-Number of angular parts of the chi-functions with angular momentum `l`.
-"""
-function n_chi_function_angulars(file::PsPFile, l)
-    # for angular momentum l, magnetic q.n. m ∈ -l:l
-    return n_chi_function_radials(file, l) * (2l + 1)
-end
-
-"""
-Number of angular parts of the chi-functions at all angular momenta up
-to the maximum angular momentum channel.
-"""
-function n_chi_function_angulars(file::PsPFile)
-    return sum(l -> n_pseudo_orbtial_angulars(file, l), 0:max_angular_momentum(file);
-               init=0)
+function formalism(file::PsPFile)::String
+    # Must be done in this order because some UPF PAW files also have is_ultrasoft == true
+    is_paw(file) && return "projector-augmented wave"
+    is_ultrasoft(file) && return "ultrasoft"
+    is_norm_conserving(file) && return "norm-conserving"
 end
 
 Base.Broadcast.broadcastable(file::PsPFile) = Ref(file)
-
-Base.:(==)(file1::PsPFile, file2::PsPFile) = identifier(file1) == identifier(file2)
-Base.hash(file::PsPFile) = hash(file.checksum)
 
 function Base.show(io::IO, file::PsPFile)
     typename = string(typeof(file))
     el = element(file)
     z = valence_charge(file)
-    return print(io, "$typename(element=$el, z_valence=$z)")
+    xc = functional(file)
+    nlcc = has_model_core_charge_density(file)
+    return print(io, "$typename(element=$el, z_valence=$z, xc=$xc, formalism=$(formalism(file)), nlcc=$nlcc)")
 end
 
 function Base.show(io::IO, ::MIME"text/plain", file::PsPFile)
     println(io, typeof(file))
     @printf "%032s: %s\n" "identifier" identifier(file)
-    @printf "%032s: %s\n" "formalism" formalism(file)
+    @printf "%032s: %s\n" "format" format(file)
     @printf "%032s: %s\n" "element" element(file)
-    @printf "%032s: %f\n" "valence charge" valence_charge(file)
-    @printf "%032s: %s\n" "relativistic treatment" relativistic_treatment(file)
-    @printf "%032s: %s\n" "non-linear core correction" has_core_density(file)
-    @printf "%032s: %d\n" "maximum angular momentum" max_angular_momentum(file)
-    @printf "%032s: %d\n" "number of projectors" n_projector_radials(file)
-    @printf "%032s: %d" "number of chi functions" n_chi_function_radials(file)
+    @printf "%032s: %s\n" "exchange-correlation (Libxc)" join(functional(file), '+')
+    @printf "%032s: %d\n" "valence charge" valence_charge(file)
+    @printf "%032s: %s\n" "spin-orbit coupling" has_spin_orbit(file)
+    @printf "%032s: %s\n" "formalism" formalism(file)
+    @printf "%032s: %s\n" "model core charge density" has_model_core_charge_density(file)
 end

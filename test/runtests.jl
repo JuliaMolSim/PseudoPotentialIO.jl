@@ -2,18 +2,10 @@ using Test
 using PseudoPotentialIO
 using Aqua
 using LazyArtifacts
-using Random
 using PeriodicTable
-using Bessels
-using QuadGK
-using Interpolations
 using JSON
-using Quaternions
 using LinearAlgebra
-using EzXML
-using SHA
-import PseudoPotentialIO: upf2_dump_psp, upf2_parse_psp
-import SpecialFunctions: erfi
+using Random
 
 Random.seed!(0)
 
@@ -27,10 +19,6 @@ include("fixtures.jl")
 @testset "PseudoPotentialIO.jl" begin
     if any(in.(("all", "aqua"), Ref(TAGS)))
         include("aqua.jl")
-    end
-
-    if any(in.(("all", "common"), Ref(TAGS)))
-        include("common.jl")
     end
 
     if any(in.(("all", "file"), Ref(TAGS)))
@@ -57,37 +45,7 @@ include("fixtures.jl")
         include("file/hgh.jl")
     end
 
-    if any(in.(("all", "psp"), Ref(TAGS)))
-        include("psp/psp.jl")
+    if any(in.(("all", "agreement"), Ref(TAGS)))
+        include("upf_psp8_agreement.jl")
     end
-
-    if any(in.(("all", "psp", "numeric"), Ref(TAGS)))
-        include("psp/numeric.jl")
-    end
-
-    if any(in.(("all", "psp", "numeric", "norm_conserving"), Ref(TAGS)))
-        include("psp/norm_conserving.jl")
-    end
-
-    if any(in.(("all", "psp", "numeric", "ultrasoft"), Ref(TAGS)))
-        include("psp/ultrasoft.jl")
-    end
-
-    if any(in.(("all", "psp", "analytical"), Ref(TAGS)))
-        include("psp/analytical.jl")
-    end
-
-    if any(in.(("all", "psp", "analytical", "upf_hgh"), Ref(TAGS)))
-        include("psp/upf_hgh.jl")
-    end
-
-    if any(in.(("all", "psp", "numeric", "upf_psp8"), Ref(TAGS)))
-        include("psp/upf_psp8.jl")
-    end
-
-    #if any(in.(("all", "deprecated"), Ref(TAGS)))
-    #    include("deprecated/upf.jl")
-    #    include("deprecated/upf_json.jl")
-    #    include("deprecated/upf_psp8.jl")
-    #end
 end

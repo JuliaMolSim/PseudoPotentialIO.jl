@@ -1,6 +1,4 @@
-function upf1_parse_psp(io::IO)
-    checksum = SHA.sha1(io)
-    seek(io, 0)
+function upf1_parse_psp(io::IO; identifier="")
     version = "1.old"
     info = upf1_parse_info(io)
     header = upf1_parse_header(io)
@@ -27,8 +25,8 @@ function upf1_parse_psp(io::IO)
     end
     paw = nothing  # Not supported by UPF v1
     gipaw = nothing  # Not supported by UPF v1
-    return UpfFile(checksum, version, info, header, mesh, nlcc, local_, nonlocal, pswfc,
-                   full_wfc, rhoatom, spinorb, paw, gipaw)
+    return UpfFile(identifier, version, info, header, mesh, nlcc, local_,
+                   nonlocal, pswfc, full_wfc, rhoatom, spinorb, paw, gipaw)
 end
 
 """
@@ -78,13 +76,33 @@ function upf1_parse_header(io::IO)
 
     # Line 5 contains the QuantumESPRESSO-style string detailing the exchange-correlation
     # functional.
-    # The line looks something like: 
+    # The line looks something like:
     #     SLA  PW   PBX  PBC    PBE  Exchange-Correlation functional
-    # We filter out any strings longer than 6 characters and create a cleaned
-    # space-separated string like:
-    #     SLA PW PBX PBC PBE
+    # We look at the first four words:
+    #     SLA PW PBX PBC
+    # which correspond to the LDA exchange, LDA correlation, GGA exchange, and GGA
+    # correlation functionals.
+    # We check that each word is a valid UPF functional string then add it to the cleaned
+    # functional string.
     s = strip.(split(strip(readline(io))))
-    functional = join(filter(s_i -> length(s_i) <= 6, s), ' ')
+    functional = []
+    functional_dictionaries = (
+        # The first word could be LDA exchange or a short name
+        [UPF_LDA_EXCHANGE..., UPF_SHORT_NAMES...],
+        UPF_LDA_CORRELATION,
+        UPF_GGA_EXCHANGE,
+        UPF_GGA_CORRELATION
+    )
+    for (word, dictionary) in zip(s, functional_dictionaries)
+        if in(word, [entry["name"] for entry in dictionary])
+            push!(functional, lowercase(word))
+        end
+    end
+    functional = join(functional, ' ')
+
+    functional_words = filter(s_i -> length(s_i) <= 6, s)
+    functional_words = functional_words[1:min(4, length(functional_words))]
+    functional = join(functional_words, ' ')
 
     # Line 6 contains the pseudo-ionic valence charge
     s = split(readline(io))
@@ -94,7 +112,7 @@ function upf1_parse_header(io::IO)
     s = split(readline(io))
     total_psenergy = parse(Float64, s[1])
 
-    # Line 8 contains the suggested kinetic-energy cutoffs for the wavefunctions and 
+    # Line 8 contains the suggested kinetic-energy cutoffs for the wavefunctions and
     # charge density (in Rydberg)
     s = split(readline(io))
     wfc_cutoff = parse(Float64, s[1])
@@ -114,7 +132,7 @@ function upf1_parse_header(io::IO)
     number_of_wfc = parse(Int, s[1])
     number_of_proj = parse(Int, s[2])
 
-    # These values are given by UPF v2 but not by v1. They are set to `nothing` or 
+    # These values are given by UPF v2 but not by v1. They are set to `nothing` or
     # a meaningful value depending on what UPF v1 supports
     generated = nothing
     author = nothing
@@ -312,7 +330,7 @@ end
 function upf1_parse_nonlocal(io::IO, pseudo_type::String, mesh_size::Int,
                              number_of_proj::Int, l_max::Int)
     # The `PP_NONLOCAL` superblock contains the KB non-local projectors, projector coupling
-    # coefficients, and (sometimes) augmentation charges 
+    # coefficients, and (sometimes) augmentation charges
     betas = upf1_parse_betas(io, number_of_proj, mesh_size)
     dij = upf1_parse_dij(io, number_of_proj)
     if pseudo_type in ("US", "USPP", "PAW")  # Ultrasoft and PAW have augmentation charges

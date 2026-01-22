@@ -2,8 +2,10 @@
 Hartwigsen-Goedecker-Hutter pseudopotential file contents.
 """
 struct HghFile <: PsPFile
-    "SHA1 Checksum"
-    checksum::Vector{UInt8}
+    "Identifier"
+    identifier::String
+    "Functional guessed from the source file path if available"
+    functional::String
     "Description"
     title::String
     "Pseudo-atomic (valence) charge"
@@ -22,9 +24,14 @@ struct HghFile <: PsPFile
     h::Vector{Matrix{Float64}}
 end
 
-function HghFile(io::IO)
-    checksum = SHA.sha1(io)
-    seek(io, 0)
+function HghFile(io::IO; identifier="")
+    if occursin("lda", identifier)
+        functional = "LDA_C LDA_X_PZ"
+    elseif occursin("pbe", identifier)
+        functional = "GGA_C_PBE GGA_X_PBE"
+    else
+        functional = ""
+    end
 
     lines = readlines(io)
     title = strip(lines[1])
@@ -82,29 +89,29 @@ function HghFile(io::IO)
             hcoeff = [parse(Float64, part) for part in split(m[1])]
         end
     end
-    return HghFile(checksum, title, zion, rloc, nloc, cloc, lmax, rp, h)
+    return HghFile(identifier, functional, title, zion, rloc, nloc, cloc, lmax, rp, h)
 end
 
-function HghFile(path::AbstractString)
+function HghFile(path::AbstractString; identifier="")
+    identifier = isempty(identifier) ? splitpath(path)[end] : identifier
     open(path, "r") do io
-        return HghFile(io)
+        return HghFile(io; identifier)
     end
 end
 
-identifier(psp::HghFile)::String = bytes2hex(psp.checksum)
+identifier(psp::HghFile)::String = psp.identifier
 format(::HghFile)::String = "HGH"
-function element(psp::HghFile)::String
+function element(psp::HghFile)::PeriodicTable.Element
+    # Guess the element from the title line, if possible
     title = split(psp.title)
-    isempty(title) && return "??"
+    isempty(title) && return PeriodicTable.Element()
     symbol = title[1]
-    return haskey(PeriodicTable.elements, Symbol(symbol)) ? symbol : "??"
+    return haskey(PeriodicTable.elements, Symbol(symbol)) ? PeriodicTable.elements[Symbol(symbol)] : PeriodicTable.Element()
 end
-has_spin_orbit(::HghFile)::Bool = false
-has_core_density(::HghFile)::Bool = false
+functional(psp::HghFile)::Vector{Symbol} = map(name -> Symbol(lowercase(name)), split(psp.functional))
+valence_charge(psp::HghFile)::Int = sum(psp.zion, init=0)
 is_norm_conserving(::HghFile)::Bool = true
 is_ultrasoft(::HghFile)::Bool = false
 is_paw(::HghFile)::Bool = false
-valence_charge(psp::HghFile)::Float64 = sum(psp.zion)
-max_angular_momentum(psp::HghFile)::Int = psp.lmax
-n_projector_radials(psp::HghFile, l::Int)::Int = size(psp.h[l + 1], 1)
-n_chi_function_radials(::HghFile, l::Int)::Int = 0
+has_spin_orbit(::HghFile)::Bool = false
+has_model_core_charge_density(::HghFile)::Bool = false

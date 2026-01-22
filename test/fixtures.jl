@@ -1,4 +1,26 @@
-import PseudoPotentialIO: _resolve_family
+_FILE_EXT_LOADERS = Dict(".upf" => UpfFile,
+                         ".psp8" => Psp8File,
+                         ".hgh" => HghFile)
+
+# Resolve the name of a PsP family artifact into its directory
+# or return the input if it's already a directory
+function _resolve_family(family_name_or_dir::AbstractString)
+    isdir(family_name_or_dir) && return family_name_or_dir
+    try
+        return @artifact_str(family_name_or_dir)
+    catch
+        error("PsP family $family does not exist")
+    end
+end
+
+function _find_pseudos(dir::AbstractString)
+    (_, _, filenames) = first(walkdir(dir))
+    psp_filenames = filter(f -> !startswith(f, "."), filenames)
+    psp_filenames = filter(f -> lowercase(splitext(f)[2]) in keys(_FILE_EXT_LOADERS),
+                           psp_filenames)
+    return psp_filenames
+end
+
 
 TEST_FAMILIES = (
     "hgh_lda_hgh",
@@ -13,7 +35,7 @@ TEST_FAMILIES = (
 TEST_FILEPATHS = []
 for family in TEST_FAMILIES
     family_dir = _resolve_family(family)
-    psp_filenames = load_family(family)["Filename"]
+    psp_filenames = _find_pseudos(family_dir)
     psp_filepaths = map(filename -> joinpath(family_dir, filename), psp_filenames)
     append!(TEST_FILEPATHS, psp_filepaths)
 end
@@ -27,7 +49,7 @@ UPF_FAMILIES = (
 UPF_FILEPATHS = []
 for family in UPF_FAMILIES
     family_dir = _resolve_family(family)
-    psp_filenames = load_family(family)["Filename"]
+    psp_filenames = _find_pseudos(family_dir)
     psp_filepaths = map(filename -> joinpath(family_dir, filename), psp_filenames)
     append!(UPF_FILEPATHS, psp_filepaths)
 end
@@ -39,7 +61,7 @@ HGH_FAMILIES = (
 HGH_FILEPATHS = []
 for family in HGH_FAMILIES
     family_dir = _resolve_family(family)
-    psp_filenames = load_family(family)["Filename"]
+    psp_filenames = _find_pseudos(family_dir)
     psp_filepaths = map(filename -> joinpath(family_dir, filename), psp_filenames)
     append!(HGH_FILEPATHS, psp_filepaths)
 end
@@ -51,7 +73,7 @@ PSP8_FAMILIES = (
 PSP8_FILEPATHS = []
 for family in PSP8_FAMILIES
     family_dir = _resolve_family(family)
-    psp_filenames = load_family(family)["Filename"]
+    psp_filenames = _find_pseudos(family_dir)
     psp_filepaths = map(filename -> joinpath(family_dir, filename), psp_filenames)
     append!(PSP8_FILEPATHS, psp_filepaths)
 end
@@ -183,14 +205,14 @@ UPF2_HGH_FILEPATHS = map(UPF2_HGH_PAIRS) do (upf2_filename, hgh_filename)
 end
 
 UPF2_PSP8_ELEMENTS = ("Ag", "Al", "Ar", "As", "Au", "B", "Ba", "Be", "Bi", "Br", "C", "Ca",
-                      # "Cr", "Cu", # TODO Chromium and Copper agreement is terrible for some reason
-                      "Cd", "Cl", "Co", "Cs", "F", "Fe", "Ga", "Ge", "H", "He",
+                      "Cr", "Cu", "Cd", "Cl", "Co", "Cs", "F", "Fe", "Ga", "Ge", "H", "He",
                       "Hf", "Hg", "I", "In", "Ir", "K", "Kr", "La", "Li", "Lu", "Mg", "Mn",
                       "Mo", "N", "Na", "Nb", "Ne", "Ni", "O", "Os", "P", "Pb", "Pd", "Po",
                       "Pt", "Rb", "Re", "Rh", "Rn", "Ru", "S", "Sb", "Sc", "Se", "Si", "Sn",
                       "Sr", "Ta", "Tc", "Te", "Ti", "Tl", "V", "W", "Xe", "Y", "Zn", "Zr")
 UPF2_PSP8_FILEPATHS = map(UPF2_PSP8_ELEMENTS) do element
     (
+        element,
         joinpath(_resolve_family("pd_nc_sr_pbe_standard_0.4.1_upf"), "$(element).upf"),
         joinpath(_resolve_family("pd_nc_sr_pbe_standard_0.4.1_psp8"), "$(element).psp8")
     )

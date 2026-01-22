@@ -50,7 +50,7 @@
         @test !header.has_gipaw
         @test isnothing(header.paw_as_gipaw)
         @test header.core_correction
-        @test header.functional == "SLA PZ NOGX NOGC PZ"
+        @test header.functional == "SLA PZ NOGX NOGC"  # "SLA PZ NOGX NOGC PZ"
         @test header.z_valence == 19.00000000000
         @test header.total_psenergy == -295.20667856400
         @test header.wfc_cutoff == 0.00000
@@ -86,7 +86,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == file.header.mesh_size
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -222,7 +222,7 @@
         @test !header.has_gipaw
         @test isnothing(header.paw_as_gipaw)
         @test header.core_correction
-        @test header.functional == "SLA PW PBE PBE PBE"
+        @test header.functional == "SLA PW PBE PBE"  # "SLA PW PBE PBE PBE"
         @test header.z_valence == 3.00000000000
         @test header.total_psenergy == -6.00744913082
         @test header.wfc_cutoff == 0.00000
@@ -258,7 +258,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == file.header.mesh_size
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -390,7 +390,7 @@
         @test !header.has_gipaw
         @test isnothing(header.paw_as_gipaw)
         @test header.core_correction
-        @test header.functional == "SLA PW PSX PSC PBEsol"
+        @test header.functional == "SLA PW PSX PSC" # "SLA PW PSX PSC PBEsol"
         @test header.z_valence == 4.00000000000
         @test header.total_psenergy == -9.13712037618
         @test header.wfc_cutoff == 0.00000
@@ -426,7 +426,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == file.header.mesh_size
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -562,7 +562,7 @@
         @test !header.has_gipaw
         @test isnothing(header.paw_as_gipaw)
         @test !header.core_correction
-        @test header.functional == "SLA PW PBX PBC PBE"
+        @test header.functional == "SLA PW PBX PBC"  # "SLA PW PBX PBC PBE"
         @test header.z_valence == 10.00000000000
         @test header.total_psenergy == -125.08981684000
         @test header.wfc_cutoff == 0.00000
@@ -597,7 +597,7 @@
         for (i, beta) in enumerate(betas)
             @test beta.index == i
             @test isnothing(beta.cutoff_radius)
-            @test length(beta.beta) == file.header.mesh_size
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)

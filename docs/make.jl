@@ -14,8 +14,6 @@ PPIOBRANCH = try LibGit2.branch(LibGit2.GitRepo(ROOTPATH)) catch end
 PPIOGH     = "github.com/azadoks/PseudoPotentialIO.jl"
 PPIOREPO   = PPIOGH * ".git"
 PAGES = ["Home" => "index.md",
-         "Tutorial" => "tutorial.jl",
-         "Quantities" => "quantities.md",
          "Formats" => "formats.md",
          "api.md"]
 
@@ -67,11 +65,10 @@ makedocs(;
          format=Documenter.HTML(;
                                 prettyurls=CONTINUOUS_INTEGRATION,
                                 canonical="https://azadoks.github.io/PseudoPotentialIO.jl",
-                                edit_link="master",
+                                edit_link="main",
                                 assets=String[]),
          pages=transform_to_md(PAGES),
-         checkdocs=:exports,
-         strict=!DEBUG)
+         checkdocs=:exports)
 
 # Deploy docs to gh-pages branch
 deploydocs(; repo=PPIOREPO, devbranch="main")

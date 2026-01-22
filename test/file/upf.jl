@@ -4,7 +4,7 @@
             file = load_psp_file(filepath)
 
             @test haskey(PeriodicTable.elements, Symbol(file.header.element))
-            z_atom = PeriodicTable.elements[Symbol(file.header.element)].number
+            z_atom = PeriodicTable.elements[Symbol(titlecase(file.header.element))].number
             @test file.header.z_valence <= z_atom
 
             if file.header.pseudo_type == "PAW"
@@ -49,13 +49,9 @@
             else
                 @test isnothing(file.nonlocal.augmentation)
             end
-            if file.header.is_coulomb
-                #? What else should be missing in this case?
-                @test isnothing(file.local_)
-            else
-                @test !isnothing(file.local_)
-                @test length(file.local_) == file.header.mesh_size
-            end
+
+            @test !isnothing(file.local_)
+            @test length(file.local_) == file.header.mesh_size
 
             if file.header.core_correction
                 @test !isnothing(file.nlcc)
@@ -77,8 +73,11 @@
 
             if file.header.number_of_wfc > 0
                 @test length(file.pswfc) == file.header.number_of_wfc
+                for chi in file.pswfc
+                    @test length(chi.chi) == file.header.mesh_size
+                end
             else
-                @test isnothing(file.pswfc)
+                @test isempty(file.pswfc)
             end
 
             if file.header.has_wfc
@@ -95,7 +94,7 @@
 
             @test length(file.nonlocal.betas) == file.header.number_of_proj
             for beta in file.nonlocal.betas
-                @test length(beta.beta) == file.header.mesh_size
+                @test (length(beta.beta) == file.header.mesh_size) | (length(beta.beta) == beta.cutoff_radius_index)
             end
         end
     end

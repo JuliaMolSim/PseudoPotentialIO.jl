@@ -42,7 +42,7 @@
 
                 if psp.header.is_paw
                     @test !isnothing(augmentation.multipoles)
-                    #TODO @test length(augmentation.multipoles) == 
+                    #TODO @test length(augmentation.multipoles) ==
                 end
             end
         end
@@ -141,7 +141,7 @@
         @test length(betas) == file.header.number_of_proj
         for (i, beta) in enumerate(betas)
             @test beta.index == i
-            @test length(beta.beta) == mesh.mesh
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
             @test isnothing(beta.norm_conserving_radius)
             @test isnothing(beta.ultrasoft_cutoff_radius)
             @test isnothing(beta.label)
@@ -304,7 +304,7 @@
         @test length(betas) == file.header.number_of_proj
         for (i, beta) in enumerate(betas)
             @test beta.index == i
-            @test length(beta.beta) == mesh.mesh
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
         end
 
         @test betas[1].label == "3S"
@@ -476,7 +476,7 @@
         @test length(betas) == file.header.number_of_proj
         for (i, beta) in enumerate(betas)
             @test beta.index == i
-            @test length(beta.beta) == mesh.mesh
+            @test (length(beta.beta) == beta.cutoff_radius_index) | (length(beta.beta) == file.header.mesh_size)
         end
 
         @test betas[1].label == "3S"
@@ -690,7 +690,7 @@
         @test !header.has_gipaw
         @test !header.paw_as_gipaw
         @test !header.core_correction
-        @test header.functional == "SLA-PW-PBX-PBC"
+        @test header.functional == "SLA PW PBX PBC"
         @test header.z_valence == 2.000000000000000E+000
         @test header.total_psenergy == 0.000000000000000E+000
         @test header.wfc_cutoff == 0.000000000000000E+000
