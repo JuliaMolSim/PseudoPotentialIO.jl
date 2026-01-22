@@ -62,10 +62,4 @@ include("load.jl")
 export save_psp_file
 include("save.jl")
 
-## Deprecated loaders
-export load_upf
-export load_psp8
-include("deprecated/upf.jl")
-include("deprecated/psp8.jl")
-
 end
