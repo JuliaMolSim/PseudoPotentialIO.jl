@@ -3,7 +3,7 @@ _FILE_EXT_LOADERS = Dict(".upf" => UpfFile,
                          ".hgh" => HghFile)
 
 """
-Parse a pseudopotential file into a `PsPFile` struct.
+Parse a pseudopotential file into a [`PsPFile`](@ref) struct.
 """
 function load_psp_file(path::AbstractString)
     _, ext = splitext(path)

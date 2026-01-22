@@ -75,6 +75,11 @@ function UpfNonlocal(file::Psp8File)
     return UpfNonlocal(betas, dij, augmentation)
 end
 
+"""
+    UpfFile(file::Psp8File)
+
+Convert a [`Psp8File`](@ref) into an equivalent [`UpfFile`](@ref).
+"""
 function UpfFile(file::Psp8File)
     if file.header.extension_switch in (2, 3)
         # See: https://github.com/abinit/abinit/blob/master/src/57_iopsp_parser/m_pspheads.F90#L958

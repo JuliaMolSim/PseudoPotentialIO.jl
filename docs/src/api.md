@@ -17,9 +17,19 @@ HghFile
 
 ## Functions
 
+### Loading and saving
 ```@docs
 load_psp_file
+save_psp_file
+```
 
+### Conversion
+```@docs
+UpfFile(::Psp8File)
+```
+
+### Metadata
+```@docs
 identifier
 format
 element

@@ -1,3 +1,6 @@
+"""
+Save a [`PsPFile`](@ref) struct into a file.
+"""
 function save_psp_file(path::AbstractString, psp::PsPFile, file_format::String)
     if file_format == "UPF v2.0.1"
         save_psp_file(path, psp, 2)
