@@ -1,7 +1,7 @@
 using PseudoPotentialIO
 using Documenter
 
-DocMeta.setdocmeta!(DftFunctionals, :DocTestSetup, :(using PseudoPotentialIO); recursive=true)
+DocMeta.setdocmeta!(PseudoPotentialIO, :DocTestSetup, :(using PseudoPotentialIO); recursive=true)
 
 makedocs(;
     modules=[PseudoPotentialIO],
