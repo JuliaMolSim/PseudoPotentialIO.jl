@@ -1,16 +1,16 @@
 # PseudoPotentialIO.jl
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://azadoks.github.io/PseudoPotentialIO.jl/stable)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://azadoks.github.io/PseudoPotentialIO.jl/dev)
-[![Build Status](https://github.com/azadoks/PseudoPotentialIO.jl/workflows/CI/badge.svg)](https://github.com/azadoks/PseudoPotentialIO.jl/actions)
-[![Coverage](https://codecov.io/gh/azadoks/PseudoPotentialIO.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/azadoks/PseudoPotentialIO.jl)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaMolSim.github.io/PseudoPotentialIO.jl/stable)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaMolSim.github.io/PseudoPotentialIO.jl/dev)
+[![Build Status](https://github.com/JuliaMolSim/PseudoPotentialIO.jl/workflows/CI/badge.svg)](https://github.com/JuliaMolSim/PseudoPotentialIO.jl/actions)
+[![Coverage](https://codecov.io/gh/JuliaMolSim/PseudoPotentialIO.jl/branch/main/graph/badge.svg)](https://codecov.io/gh/JuliaMolSim/PseudoPotentialIO.jl)
 
 PseudoPotentialIO aims to provide parsers for common pseudopotential file formats used by density functional theory codes and an interface for accesssing the quantities that they contain.
 
 ## Reading pseudopotentials
 
 The following file formats are supported or have planned (or no planned) support.
-If your favorite format does not appear in the table below, please file an [issue](https://github.com/azadoks/PseudoPotentialIO.jl/issues)!
+If your favorite format does not appear in the table below, please file an [issue](https://github.com/JuliaMolSim/PseudoPotentialIO.jl/issues)!
 
 | Format                   | Read        |
 |--------------------------|-------------|

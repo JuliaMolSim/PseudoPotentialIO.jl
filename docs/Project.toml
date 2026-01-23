@@ -3,3 +3,6 @@ DocStringExtensions = "ffbed154-4ef7-542d-bbb7-c09d3a79fcae"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 PseudoPotentialIO = "cb339c56-07fa-4cb2-923a-142469552264"
+
+[sources]
+PseudoPotentialIO = {path = ".."}

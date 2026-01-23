@@ -1,6 +1,6 @@
 name = "PseudoPotentialIO"
 uuid = "cb339c56-07fa-4cb2-923a-142469552264"
-authors = ["Austin Zadoks"]
+authors = ["Austin Zadoks", "Bruno Ploumhans", "Michael F. Herbst"]
 version = "0.3.0"
 
 [deps]
