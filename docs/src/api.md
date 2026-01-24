@@ -29,16 +29,18 @@ UpfFile(::Psp8File)
 ```
 
 ### Metadata
+Note that these functions are not exported, but part of the public API.
+
 ```@docs
-identifier
-format
-element
-functional
-valence_charge
-is_norm_conserving
-is_ultrasoft
-is_paw
-has_spin_orbit
-has_model_core_charge_density
-formalism
+PseudoPotentialIO.identifier
+PseudoPotentialIO.format
+PseudoPotentialIO.element
+PseudoPotentialIO.functional
+PseudoPotentialIO.valence_charge
+PseudoPotentialIO.is_norm_conserving
+PseudoPotentialIO.is_ultrasoft
+PseudoPotentialIO.is_paw
+PseudoPotentialIO.has_spin_orbit
+PseudoPotentialIO.has_model_core_charge_density
+PseudoPotentialIO.formalism
 ```

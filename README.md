@@ -34,11 +34,12 @@ However, different file formats provide important physical quantities in slightl
 Be sure to check the docstrings and comments here in PseudoPotentialIO.jl or the relevant documentation of the file format.
 
 ## Writing pseudopotentials
-This package also supports writing pseudopotentials, currently only in the UPF v2.0.1 format.
-This is done using `save_psp_file`:
+This package also supports writing pseudopotentials, currently only in
+the UPF v2.0.1 and PSP8 format. This is done using `save_psp_file`:
 ```jl
-save_psp_file("path/to/pseudo.upf", pseudo, "UPF v2.0.1")
+save_psp_file("path/to/pseudo.upf", pseudo)
 ```
+where `pseudo` is a `UpfFile` or `Psp8File`.
 Support for additional formats might be added in the future.
 
 ## Converting pseudopotentials
@@ -46,9 +47,9 @@ Conversion from PSP8 to UPF is implemented as well,
 by calling the `UpfFile` constructor with a `Psp8File`.
 Conversions between other formats might be added in the future.
 
-Here is a full example of reading a PSP8 file, converting it to a UPF file and then writing it:
+Here is a full example of reading a PSP8 file,
+converting it to a UPF file and then writing it:
 ```jl
 psp8 = load_psp_file("path/to/pseudo.psp8")
-upf = UpfFile(psp8)
-save_psp_file("path/to/pseudo.upf", upf, "UPF v2.0.1")
+save_psp_file("path/to/pseudo.upf", UpfFile(psp8))
 ```

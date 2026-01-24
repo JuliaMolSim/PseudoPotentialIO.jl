@@ -372,22 +372,17 @@ function UpfFile(io::IO; identifier="")
 end
 
 """
-write UPF file to `io`
-
-note: no matter what version the file is, it will be written as UPF v2.0.1
+Write UPF file to `io`. Note that the file is written the UPF version passed
+as a string and this value takes preference over the version stored in `psp`.
 """
-function save_psp(io::IO, psp::UpfFile, version::Int)
-    if version == 2
+function save_psp(io::IO, psp::UpfFile; format="UPF v2.0.1")
+    if format == "UPF v2.0.1"
         root_node = upf2_dump_psp(psp)
         prettyprint(io, root_node)
+    elseif format == "UPF v1.old"
+        error("$format not supported yet.")
     else
-        error("UPF version $version not supported yet.")
-    end
-end
-
-function save_psp_file(path::AbstractString, psp::UpfFile, version::Int)
-    open(path, "w") do io
-        save_psp(io, psp, version)
+        error("$format is unknown. Only 'UPF v2.0.1' and 'UPF v1.old' are known.")
     end
 end
 

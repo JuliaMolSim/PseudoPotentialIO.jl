@@ -64,6 +64,7 @@ function formalism(file::PsPFile)::String
     is_paw(file) && return "projector-augmented wave"
     is_ultrasoft(file) && return "ultrasoft"
     is_norm_conserving(file) && return "norm-conserving"
+    return "unknown"
 end
 
 Base.Broadcast.broadcastable(file::PsPFile) = Ref(file)

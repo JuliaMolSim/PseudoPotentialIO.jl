@@ -29,18 +29,25 @@ include("data/upf_functionals.jl")
 include("common/mesh.jl")
 
 ## File datastructures and interface
+# These are only 'public' to avoid clashes in the ecosystem with functions
+# of similar names, e.g. in Libxc.jl and AtomsBase.jl
 export PsPFile
-export identifier
-export format
-export element
-export functional
-export valence_charge
-export is_norm_conserving
-export is_ultrasoft
-export is_paw
-export has_spin_orbit
-export has_model_core_charge_density
-export formalism
+#= TODO: Can be changed to this once 1.11 is hard enforced
+public is_norm_conserving
+public is_ultrasoft
+public is_paw
+public has_spin_orbit
+public has_model_core_charge_density
+public identifier
+public format
+public element
+public functional
+public valence_charge
+public formalism
+=#
+@static if VERSION >= v"1.11.0-DEV.469"
+    eval(Meta.parse("public identifier, format, element, functional, valence_charge, formalism, is_norm_conserving, is_ultrasoft, is_paw, has_spin_orbit, has_model_core_charge_density"))
+end
 include("file/file.jl")
 
 export UpfFile

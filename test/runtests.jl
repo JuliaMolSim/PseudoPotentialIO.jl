@@ -1,5 +1,8 @@
 using Test
 using PseudoPotentialIO
+using PseudoPotentialIO: is_norm_conserving, is_ultrasoft, is_paw, 
+    has_spin_orbit, has_model_core_charge_density, identifier, 
+    format, element, functional, valence_charge, formalism
 using Aqua
 using LazyArtifacts
 using PeriodicTable

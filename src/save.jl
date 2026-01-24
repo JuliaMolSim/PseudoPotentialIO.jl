@@ -1,12 +1,11 @@
 """
-Save a [`PsPFile`](@ref) struct into a file.
+Save a [`PsPFile`](@ref) struct into a file. The file type depends on the
+type of the file to save (e.g. a `Psp8File` file is saved to a `.psp8` or
+a `UpfFile` to a `.upf`). An important keyword argument is `format`, which
+enables to request a particular version of the file format to be employed.
 """
-function save_psp_file(path::AbstractString, psp::PsPFile, file_format::String)
-    if file_format == "UPF v2.0.1"
-        save_psp_file(path, psp, 2)
-    elseif file_format == "UPF v1.old"
-        @error "Not support save to UPF v1.old"
-    else
-        @error "Not support save from $(format(psp)) to $file_format"
+function save_psp_file(path::AbstractString, psp::PsPFile, args...; kwargs...)
+    open(path, "w") do io
+        save_psp(io, psp, args...; kwargs...)
     end
 end

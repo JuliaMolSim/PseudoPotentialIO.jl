@@ -8,7 +8,7 @@
             # create a tmp file to save for test purpose
             tmpdir = mktempdir(; cleanup = true)
             outpath = joinpath(tmpdir, "tmp.upf")
-            save_psp_file(outpath, psp, format(psp))
+            save_psp_file(outpath, psp; format=format(psp))
 
             newpsp = load_psp_file(outpath)
 
