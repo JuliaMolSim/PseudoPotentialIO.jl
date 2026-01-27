@@ -90,7 +90,7 @@ function UpfFile(file::Psp8File)
     info = "Converted from PSP8 format by PseudoPotentialIO.jl $(PseudoPotentialIO.VERSION)"
     header = UpfHeader(file)
     mesh = UpfMesh(file)
-    nlcc = file.rhoc ./ 4π  # Remove 4π prefactor
+    nlcc = header.core_correction ? file.rhoc ./ 4π : nothing  # Remove 4π prefactor
     local_ = file.v_local .* 2  # Ha -> Ry
     nonlocal = UpfNonlocal(file)
     pswfc = UpfChi[]

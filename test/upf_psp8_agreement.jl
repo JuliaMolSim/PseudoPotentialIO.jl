@@ -76,10 +76,12 @@ end
 end
 
 @testset "PSP8 -> UPF conversion agreement" begin
-    psp8 = load_psp_file(
-        joinpath(_resolve_family("pd_nc_sr_pbe_standard_0.4.1_psp8"), "Pb.psp8"),
-    )
-    upf = UpfFile(psp8)
+    for (element, _, psp8_path) in UPF2_PSP8_FILEPATHS
+        @testset "$element" begin
+            psp8 = load_psp_file(psp8_path)
+            upf = UpfFile(psp8)
 
-    test_psp8_upf_agreement(psp8, upf)
+            test_psp8_upf_agreement(psp8, upf)
+        end
+    end
 end
