@@ -2,6 +2,9 @@ function upf2_parse_psp(io::IO; identifier="")
     text = read(io, String)
     # Remove end-of-file junk (input data, etc.)
     text = string(split(text, "</UPF>")[1], "</UPF>")
+    # SPMS put an ampersand in their group name in PP_INFO which causes XML parsing to fail.
+    text = replace(text, r"&[^(amp;)]" => "&amp;")
+
     doc = parsexml(text)
 
     root_node = root(doc)
@@ -165,7 +168,7 @@ end
 
 function upf2_dump_header(h::UpfHeader)::EzXML.Node
     node = ElementNode("PP_HEADER")
-    
+
     for n in fieldnames(UpfHeader)
         set_attr!(node, n, getfield(h, n))
     end
@@ -333,7 +336,7 @@ end
 function upf2_dump_augmentation(aug::UpfAugmentation)::EzXML.Node
     node = ElementNode("PP_AUGMENTATION")
 
-    for n in [n for n in fieldnames(UpfAugmentation) if 
+    for n in [n for n in fieldnames(UpfAugmentation) if
         n != :qij && n != :qijl && n != :qfcoefs && n != :rinner && n != :multipoles && n != :q]
         set_attr!(node, n, getfield(aug, n))
     end
