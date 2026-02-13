@@ -27,6 +27,7 @@ include("data/upf_functionals.jl")
 
 ## Common utilities
 include("common/mesh.jl")
+include("common/xml.jl")
 
 ## File datastructures and interface
 # These are only 'public' to avoid clashes in the ecosystem with functions

@@ -2,8 +2,7 @@ function upf2_parse_psp(io::IO; identifier="")
     text = read(io, String)
     # Remove end-of-file junk (input data, etc.)
     text = string(split(text, "</UPF>")[1], "</UPF>")
-    # SPMS put an ampersand in their group name in PP_INFO which causes XML parsing to fail.
-    text = replace(text, r"&(?!(amp|apos|quot|lt|gt);)" => "&amp;")
+    text = escape_ampersand(text)
 
     doc = parsexml(text)
 
