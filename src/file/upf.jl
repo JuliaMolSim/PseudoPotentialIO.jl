@@ -312,11 +312,35 @@ struct UpfGipawCoreOrbital
 end
 
 """
+UPF `<PP_GIPAW/PP_GIPAW_ORBITALS/PP_GIPAW_ORBITAL.[i]>`
+"""
+struct UpfGipawOrbital
+    index::Int
+    label::Union{Nothing,String}
+    "Angular momentum"
+    l::Int
+    cutoff_radius::Union{Nothing,Float64}
+    ultrasoft_cutoff_radius::Union{Nothing,Float64}
+    wf_ae::Vector{Float64}
+    wf_ps::Vector{Float64}
+end
+
+"""
+UPF `<PP_GIPAW/PP_GIPAW_VLOCAL>`
+"""
+struct UpfGipawVlocal
+    vlocal_ae::Vector{Float64}
+    vlocal_ps::Vector{Float64}
+end
+
+"""
 UPF `<PP_GIPAW>`
 """
 struct UpfGipaw
     gipaw_data_format::Int
     core_orbitals::Vector{UpfGipawCoreOrbital}
+    orbitals::Union{Nothing,Vector{UpfGipawOrbital}}
+    vlocal::Union{Nothing,UpfGipawVlocal}
 end
 
 """

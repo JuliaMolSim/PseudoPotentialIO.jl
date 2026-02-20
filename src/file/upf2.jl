@@ -667,6 +667,59 @@ function upf2_dump_gipaw_core_orbital(core_orbital::UpfGipawCoreOrbital)::EzXML.
     return node
 end
 
+function upf2_parse_gipaw_orbital(node::EzXML.Node)
+    index = get_attr(Int, node, "index")
+    label = get_attr(String, node, "label")
+    l = Int(get_attr(Float64, node, "l"))
+    cutoff_radius = get_attr(Float64, node, "cutoff_radius")
+    ultrasoft_cutoff_radius = get_attr(Float64, node, "ultrasoft_cutoff_radius")
+    wf_ae_node = findfirst("PP_GIPAW_WFS_AE", node)
+    wf_ae = parse_nodecontent(Float64, wf_ae_node)
+    wf_ps_node = findfirst("PP_GIPAW_WFS_PS", node)
+    wf_ps = parse_nodecontent(Float64, wf_ps_node)
+    return UpfGipawOrbital(index, label, l, cutoff_radius, ultrasoft_cutoff_radius, wf_ae, wf_ps)
+end
+
+function upf2_dump_gipaw_orbital(orbital::UpfGipawOrbital)::EzXML.Node
+    node = ElementNode("PP_GIPAW_ORBITAL.$(orbital.index)")
+    for n in [n for n in fieldnames(UpfGipawOrbital) if n != :wf_ae && n != :wf_ps]
+        value = getfield(orbital, n)
+        if !isnothing(value)
+            set_attr!(node, n, value)
+        end
+    end
+    node_ae = ElementNode("PP_GIPAW_WFS_AE")
+    text_ae = array_to_text(orbital.wf_ae)
+    link!(node_ae, TextNode(text_ae))
+    link!(node, node_ae)
+    node_ps = ElementNode("PP_GIPAW_WFS_PS")
+    text_ps = array_to_text(orbital.wf_ps)
+    link!(node_ps, TextNode(text_ps))
+    link!(node, node_ps)
+    return node
+end
+
+function upf2_parse_gipaw_vlocal(node::EzXML.Node)
+    vlocal_ae_node = findfirst("PP_GIPAW_VLOCAL_AE", node)
+    vlocal_ae = parse_nodecontent(Float64, vlocal_ae_node)
+    vlocal_ps_node = findfirst("PP_GIPAW_VLOCAL_PS", node)
+    vlocal_ps = parse_nodecontent(Float64, vlocal_ps_node)
+    return UpfGipawVlocal(vlocal_ae, vlocal_ps)
+end
+
+function upf2_dump_gipaw_vlocal(vlocal::UpfGipawVlocal)::EzXML.Node
+    node = ElementNode("PP_GIPAW_VLOCAL")
+    node_ae = ElementNode("PP_GIPAW_VLOCAL_AE")
+    text_ae = array_to_text(vlocal.vlocal_ae)
+    link!(node_ae, TextNode(text_ae))
+    link!(node, node_ae)
+    node_ps = ElementNode("PP_GIPAW_VLOCAL_PS")
+    text_ps = array_to_text(vlocal.vlocal_ps)
+    link!(node_ps, TextNode(text_ps))
+    link!(node, node_ps)
+    return node
+end
+
 function upf2_parse_gipaw(node::EzXML.Node)
     gipaw_data_format = get_attr(Int, node, "gipaw_data_format")
     core_orbitals_node = findfirst("PP_GIPAW_CORE_ORBITALS", node)
@@ -674,7 +727,22 @@ function upf2_parse_gipaw(node::EzXML.Node)
                           for n in eachnode(core_orbitals_node)
                           if occursin("PP_GIPAW_CORE_ORBITAL.", nodename(n))]
     core_orbitals = upf2_parse_gipaw_core_orbital.(core_orbital_nodes)
-    return UpfGipaw(gipaw_data_format, core_orbitals)
+    orbitals_node = findfirst("PP_GIPAW_ORBITALS", node)
+    if isnothing(orbitals_node)
+        orbitals = nothing
+    else
+        orbital_nodes = [n
+                         for n in eachnode(orbitals_node)
+                         if occursin("PP_GIPAW_ORBITAL.", nodename(n))]
+        orbitals = upf2_parse_gipaw_orbital.(orbital_nodes)
+    end
+    vlocal_node = findfirst("PP_GIPAW_VLOCAL", node)
+    if isnothing(vlocal_node)
+        vlocal = nothing
+    else
+        vlocal = upf2_parse_gipaw_vlocal(vlocal_node)
+    end
+    return UpfGipaw(gipaw_data_format, core_orbitals, orbitals, vlocal)
 end
 upf2_parse_gipaw(doc::EzXML.Document) = upf2_parse_gipaw(findfirst("PP_GIPAW", root(doc)))
 
@@ -689,6 +757,20 @@ function upf2_dump_gipaw(gipaw::UpfGipaw)::EzXML.Node
         link!(core_orbitals_node, upf2_dump_gipaw_core_orbital(core_orbital))
     end
     link!(node, core_orbitals_node)
+
+    # PP_GIPAW_ORBITALS
+    if !isnothing(gipaw.orbitals)
+        orbitals_node = ElementNode("PP_GIPAW_ORBITALS")
+        for orbital in gipaw.orbitals
+            link!(orbitals_node, upf2_dump_gipaw_orbital(orbital))
+        end
+        link!(node, orbitals_node)
+    end
+
+    # PP_GIPAW_VLOCAL
+    if !isnothing(gipaw.vlocal)
+        link!(node, upf2_dump_gipaw_vlocal(gipaw.vlocal))
+    end
 
     return node
 end
