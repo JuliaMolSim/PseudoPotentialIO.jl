@@ -105,8 +105,10 @@ function psp8_parse_header(io::IO)
     if extension_switch in (2, 3)
         s = split(readline(io))
         nprojso = [0, [parse(Int, s[i]) for i in 1:lmax]...]
-    else
+    elseif extension_switch == 0
         nprojso = nothing
+    else
+        error("Unknown psp8 extension switch value: $extension_switch")
     end
 
     return Psp8Header(title, zatom, zion, pspd, pspcod, pspxc, lmax, lloc, mmax, r2well,

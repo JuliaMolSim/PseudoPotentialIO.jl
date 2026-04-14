@@ -28,6 +28,8 @@ struct UpfHeader <: PsPFile
     paw_as_gipaw::Union{Nothing,Bool}
     "True if non-linear core correction is included"
     core_correction::Bool
+    "True if meta-GGA data (model and atom kinetic energy densities) is present"
+    with_metagga_info::Bool
     "QuantumEspresso exchange-correlation identifiers"
     functional::String
     "Pseudo-atomic charge"
@@ -78,6 +80,7 @@ function Base.show(io::IO, ::MIME"text/plain", header::UpfHeader)
         @printf "%032s: %s\n" "PAW as GIPAW" header.paw_as_gipaw
     end
     @printf "%032s: %s\n" "has non-linear core correction" header.core_correction
+    @printf "%032s: %s\n" "has meta-GGA info" header.with_metagga_info
     @printf "%032s: %s\n" "functional (QuantumESPRESSO)" header.functional
     @printf "%032s: %.6f\n" "valence charge" header.z_valence
     if !isnothing(header.total_psenergy)
@@ -335,6 +338,8 @@ struct UpfFile <: PsPFile
     mesh::UpfMesh
     "Pseudized core charge on the radial grid, (ignored if `core_correction` is false)"
     nlcc::Union{Nothing,Vector{Float64}}
+    "Model core kinetic energy density on the radial grid (ignored if `with_metagga_info` is false)"
+    taumod::Union{Nothing,Vector{Float64}}
     "Local part of the pseudopotential on the radial grid (ignored if `is_coulomb`)"
     local_::Union{Nothing,Vector{Float64}}
     "Nonlocal part of the pseudopotential"
@@ -345,6 +350,9 @@ struct UpfFile <: PsPFile
     full_wfc::Union{Nothing,UpfFullWfc}
     "Pseudo-atomic valence charge density on the radial grid with prefactor 4πr²"
     rhoatom::Vector{Float64}
+    # TODO: is there a prefactor of 4πr² as well?
+    "Pseudo-atomic kinetic energy density on the radial grid (ignored if `with_metagga_info` is false)"
+    tauatom::Union{Nothing,Vector{Float64}}
     "Spin-orbit coupling data, (ignored if `has_so` is false)"
     spin_orb::Union{Nothing,UpfSpinOrb}
     "PAW data, (ignored if `is_paw` is false)"
@@ -413,6 +421,7 @@ end
 
 identifier(psp::UpfFile)::String = psp.identifier
 format(file::UpfFile)::String = "UPF v$(file.version)"
+# TODO: this fails when header.functional == "r2SCAN01"...
 function libxc_string(header::UpfHeader)
     functional = header.functional
     upf_codes = lowercase.(split(functional))
