@@ -281,6 +281,7 @@ function upf2_parse_augmentation(node::EzXML.Node)
     q_node = findfirst("PP_Q", node)
     q_vector = parse_nodecontent(Float64, q_node)
     q_size = get_attr(Int, q_node, "size")
+    isnothing(q_size) && (q_size = length(q_vector))
     nq = Int(sqrt(q_size))
     q = reshape(q_vector, nq, nq)
 
