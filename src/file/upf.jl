@@ -336,9 +336,15 @@ struct UpfFile <: PsPFile
     header::UpfHeader
     "Radial mesh, mesh integration factors, and other mesh information"
     mesh::UpfMesh
-    "Pseudized core charge on the radial grid, (ignored if `core_correction` is false)"
+    """
+    Pseudized core charge on the radial grid (ignored if `core_correction` is false).
+    Note that there is no 4π nor r² prefactor here.
+    """
     nlcc::Union{Nothing,Vector{Float64}}
-    "Model core kinetic energy density on the radial grid (ignored if `with_metagga_info` is false)"
+    """
+    Model core kinetic energy density on the radial grid (ignored if `with_metagga_info` is false).
+    Note that there is no 4π nor r² prefactor here.
+    """
     taumod::Union{Nothing,Vector{Float64}}
     "Local part of the pseudopotential on the radial grid (ignored if `is_coulomb`)"
     local_::Union{Nothing,Vector{Float64}}

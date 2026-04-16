@@ -53,6 +53,7 @@ for family in UPF_FAMILIES
     psp_filepaths = map(filename -> joinpath(family_dir, filename), psp_filenames)
     append!(UPF_FILEPATHS, psp_filepaths)
 end
+push!(UPF_FILEPATHS, joinpath(@__DIR__, "data/56_Ba_m.upf"))
 
 HGH_FAMILIES = (
     "hgh_lda_hgh",
@@ -111,6 +112,7 @@ for (family, filename) in UPF2_CASES
         error("UPF2_CASE_FILEPATHS already contains a case for $filename")
     end
 end
+UPF2_CASE_FILEPATHS["56_Ba_m.upf"] = joinpath(@__DIR__, "data/56_Ba_m.upf")
 
 PSP8_CASES = [
      ("pd_nc_sr_pbe_standard_0.4.1_psp8", "H.psp8"),

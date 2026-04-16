@@ -1,7 +1,7 @@
 @testset "UPF v2.0.1" begin
 
     @testset "Internal data consistency" begin
-        # Test after a circle, not data is lost
+        # Test after a circle, no data is lost
         for filepath in values(UPF2_CASE_FILEPATHS)
             psp = load_psp_file(filepath)
             
@@ -29,6 +29,10 @@
             end
             @test psp.nonlocal.dij ≈ newpsp.nonlocal.dij
             @test psp.rhoatom ≈ newpsp.rhoatom
+            if psp.header.with_metagga_info
+                @test psp.taumod ≈ newpsp.taumod
+                @test psp.tauatom ≈ newpsp.tauatom
+            end
 
             # check io and recur_io are the same
 
@@ -107,6 +111,7 @@
         @test !header.has_gipaw
         @test isnothing(header.paw_as_gipaw)
         @test !header.core_correction
+        @test !header.with_metagga_info
         @test header.functional == "PBESOL"
         @test header.z_valence == 10.00
         @test header.total_psenergy == -1.18479378822E+02
@@ -269,6 +274,7 @@
         @test !header.has_gipaw
         @test !header.paw_as_gipaw
         @test header.core_correction
+        @test !header.with_metagga_info
         @test header.functional == "PBE"
         @test header.z_valence == 4.000000000000000E+000
         @test header.total_psenergy == -1.102230803678973E+001
@@ -441,6 +447,7 @@
         @test header.has_gipaw
         @test header.paw_as_gipaw
         @test header.core_correction
+        @test !header.with_metagga_info
         @test header.functional == "SLA PW PBX PBC"
         @test header.z_valence == 3.000000000000000E+000
         @test header.total_psenergy == -3.922759814471728E+001
@@ -690,6 +697,7 @@
         @test !header.has_gipaw
         @test !header.paw_as_gipaw
         @test !header.core_correction
+        @test !header.with_metagga_info
         @test header.functional == "SLA PW PBX PBC"
         @test header.z_valence == 2.000000000000000E+000
         @test header.total_psenergy == 0.000000000000000E+000
@@ -750,5 +758,35 @@
         @test isnothing(file.spin_orb)
         @test isnothing(file.paw)
         @test isnothing(file.gipaw)
+    end
+
+    @testset "56_Ba_m.upf (METAPSP)" begin
+        filename = "56_Ba_m.upf"
+        file = load_psp_file(UPF2_CASE_FILEPATHS[filename])
+
+        header = file.header
+        @test header.generated == "Generated using METAPSP code by D. R. Hamann"
+        @test header.author == "anonymous"
+        @test header.date == "240513"
+        @test header.comment == ""
+        @test header.element == "Ba"
+        @test header.pseudo_type == "NC"
+        # TODO: this is what the file contains but "F" is not valid
+        @test header.relativistic == "F"
+        @test !header.is_ultrasoft
+        @test !header.is_paw
+        @test !header.is_coulomb
+        @test !header.has_so
+        @test !header.has_wfc
+        @test !header.has_gipaw
+        @test isnothing(header.paw_as_gipaw)
+        @test header.core_correction
+        @test header.with_metagga_info
+        @test header.functional == "R2SCAN01"
+
+        @test !isnothing(file.taumod)
+        @test length(file.taumod) == 1982
+        @test !isnothing(file.tauatom)
+        @test length(file.tauatom) == 1982
     end
 end
