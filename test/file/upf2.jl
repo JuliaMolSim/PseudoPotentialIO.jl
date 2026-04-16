@@ -796,7 +796,6 @@
         τatom = file.tauatom
         ∇ρatom = [diff(ρatom); 0.0] ./ file.mesh.rab
         τ_W = ∇ρatom.^2 ./ (8 .* ρatom)
-        @show minimum(τatom[2:end] .- τ_W[2:end])
         @test all(τatom[2:end] .- τ_W[2:end] .≥ 0)
     end
 end
