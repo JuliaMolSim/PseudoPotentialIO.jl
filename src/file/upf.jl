@@ -354,10 +354,14 @@ struct UpfFile <: PsPFile
     pswfc::Vector{UpfChi}
     "All-electron wavefunctions"
     full_wfc::Union{Nothing,UpfFullWfc}
-    "Pseudo-atomic valence charge density on the radial grid with prefactor 4πr²"
+    """
+    Pseudo-atomic valence charge density on the radial grid with prefactor 4πr².
+    """
     rhoatom::Vector{Float64}
-    # TODO: is there a prefactor of 4πr² as well?
-    "Pseudo-atomic kinetic energy density on the radial grid (ignored if `with_metagga_info` is false)"
+    """
+    Pseudo-atomic kinetic energy density on the radial grid (ignored if `with_metagga_info` is false).
+    Note that there is no 4π nor r² prefactor here, **unlike rhoatom**.
+    """
     tauatom::Union{Nothing,Vector{Float64}}
     "Spin-orbit coupling data, (ignored if `has_so` is false)"
     spin_orb::Union{Nothing,UpfSpinOrb}

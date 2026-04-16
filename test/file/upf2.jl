@@ -788,5 +788,15 @@
         @test length(file.taumod) == 1982
         @test !isnothing(file.tauatom)
         @test length(file.tauatom) == 1982
+
+        # sanity check for the different normalizations of rhoatom and tauatom
+        # we should always have α ≥ 0 i.e. τ - τ_W ≥ 0
+        # careful with the first point where r == 0
+        ρatom = [0.0; (file.rhoatom ./ file.mesh.r.^2 ./ 4π)[2:end]]
+        τatom = file.tauatom
+        ∇ρatom = [diff(ρatom); 0.0] ./ file.mesh.rab
+        τ_W = ∇ρatom.^2 ./ (8 .* ρatom)
+        @show minimum(τatom[2:end] .- τ_W[2:end])
+        @test all(τatom[2:end] .- τ_W[2:end] .≥ 0)
     end
 end
