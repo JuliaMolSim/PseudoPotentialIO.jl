@@ -28,7 +28,10 @@ struct UpfHeader <: PsPFile
     paw_as_gipaw::Union{Nothing,Bool}
     "True if non-linear core correction is included"
     core_correction::Bool
-    "True if meta-GGA data (model and atom kinetic energy densities) is present"
+    """
+    True if additional data (model and atom kinetic energy densities)
+    for kinetic energy-dependent meta-GGAs is present.
+    """
     with_metagga_info::Bool
     "QuantumEspresso exchange-correlation identifiers"
     functional::String
@@ -342,7 +345,7 @@ struct UpfFile <: PsPFile
     """
     nlcc::Union{Nothing,Vector{Float64}}
     """
-    Model core kinetic energy density on the radial grid (ignored if `with_metagga_info` is false).
+    Model core kinetic energy density on the radial grid.
     Note that there is no 4π nor r² prefactor here.
     """
     taumod::Union{Nothing,Vector{Float64}}
@@ -359,7 +362,7 @@ struct UpfFile <: PsPFile
     """
     rhoatom::Vector{Float64}
     """
-    Pseudo-atomic kinetic energy density on the radial grid (ignored if `with_metagga_info` is false).
+    Pseudo-atomic kinetic energy density on the radial grid.
     Note that there is no 4π nor r² prefactor here, **unlike rhoatom**.
     """
     tauatom::Union{Nothing,Vector{Float64}}
@@ -431,12 +434,15 @@ end
 
 identifier(psp::UpfFile)::String = psp.identifier
 format(file::UpfFile)::String = "UPF v$(file.version)"
-# TODO: this fails when header.functional == "r2SCAN01"...
 function libxc_string(header::UpfHeader)
     functional = header.functional
     upf_codes = lowercase.(split(functional))
 
     if length(upf_codes) == 1  # Short code
+        # special case r2SCAN01 as produced by METAPSP,
+        # since QE so far only expects LDA and GGA XCs
+        upf_codes[1] == "r2scan01" && return "mgga_x_r2scan01 mgga_c_r2scan01"
+
         entry_index = findfirst(e -> e["name"] == upf_codes[1], UPF_SHORT_NAMES)
         long_code = UPF_SHORT_NAMES[entry_index]["full_name"]
         upf_codes = split(long_code, '+')

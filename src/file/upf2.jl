@@ -24,12 +24,10 @@ function upf2_parse_psp(io::IO; identifier="")
         nlcc = parse_nodecontent(nlcc_node)
     end
     #* PP_TAUMOD
-    taumod = nothing
-    if header.with_metagga_info
-        taumod_node = findfirst("PP_TAUMOD", root_node)
-        if isnothing(taumod_node)
-            error("Could not find PP_TAUMOD node, which is required when with_metagga_info is true.")
-        end
+    taumod_node = findfirst("PP_TAUMOD", root_node)
+    if isnothing(taumod_node)
+        taumod = nothing
+    else
         taumod = parse_nodecontent(taumod_node)
     end
     #* PP_LOCAL
@@ -55,12 +53,10 @@ function upf2_parse_psp(io::IO; identifier="")
     rhoatom_node = findfirst("PP_RHOATOM", root_node)
     rhoatom = parse_nodecontent(rhoatom_node)
     #* PP_TAUATOM
-    tauatom = nothing
-    if header.with_metagga_info
-        tauatom_node = findfirst("PP_TAUATOM", root_node)
-        if isnothing(tauatom_node)
-            error("Could not find PP_TAUATOM node, which is required when with_metagga_info is true.")
-        end
+    tauatom_node = findfirst("PP_TAUATOM", root_node)
+    if isnothing(tauatom_node)
+        tauatom = nothing
+    else
         tauatom = parse_nodecontent(tauatom_node)
     end
     #* PP_SPINORB
