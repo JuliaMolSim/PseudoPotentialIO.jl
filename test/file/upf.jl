@@ -58,6 +58,13 @@
                 @test length(file.nlcc) == file.header.mesh_size
             end
 
+            if file.header.with_metagga_info
+                @test !isnothing(file.taumod)
+                @test length(file.taumod) == file.header.mesh_size
+                @test !isnothing(file.tauatom)
+                @test length(file.tauatom) == file.header.mesh_size
+            end
+
             if file.header.has_so
                 @test !isnothing(file.spin_orb)
                 @test length(file.spin_orb.relbetas) == file.header.number_of_proj

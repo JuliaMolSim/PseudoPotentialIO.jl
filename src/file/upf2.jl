@@ -21,14 +21,21 @@ function upf2_parse_psp(io::IO; identifier="")
     if isnothing(nlcc_node)
         nlcc = nothing
     else
-        nlcc = parse_nodecontent(Float64, nlcc_node)
+        nlcc = parse_nodecontent(nlcc_node)
+    end
+    #* PP_TAUMOD
+    taumod_node = findfirst("PP_TAUMOD", root_node)
+    if isnothing(taumod_node)
+        taumod = nothing
+    else
+        taumod = parse_nodecontent(taumod_node)
     end
     #* PP_LOCAL
     local_node = findfirst("PP_LOCAL", root_node)
     if isnothing(local_node) | header.is_coulomb
         local_ = nothing
     else
-        local_ = parse_nodecontent(Float64, local_node)
+        local_ = parse_nodecontent(local_node)
     end
     #* PP_NONLOCAL
     nonlocal = upf2_parse_nonlocal(doc)
@@ -44,7 +51,14 @@ function upf2_parse_psp(io::IO; identifier="")
     end
     #* PP_RHOATOM
     rhoatom_node = findfirst("PP_RHOATOM", root_node)
-    rhoatom = parse_nodecontent(Float64, rhoatom_node)
+    rhoatom = parse_nodecontent(rhoatom_node)
+    #* PP_TAUATOM
+    tauatom_node = findfirst("PP_TAUATOM", root_node)
+    if isnothing(tauatom_node)
+        tauatom = nothing
+    else
+        tauatom = parse_nodecontent(tauatom_node)
+    end
     #* PP_SPINORB
     if isnothing(findfirst("PP_SPIN_ORB", root_node))
         spinorb = nothing
@@ -64,8 +78,8 @@ function upf2_parse_psp(io::IO; identifier="")
         gipaw = upf2_parse_gipaw(doc)
     end
 
-    return UpfFile(identifier, version, info, header, mesh, nlcc, local_,
-                   nonlocal, pswfc, full_wfc, rhoatom, spinorb, paw, gipaw)
+    return UpfFile(identifier, version, info, header, mesh, nlcc, taumod, local_,
+                   nonlocal, pswfc, full_wfc, rhoatom, tauatom, spinorb, paw, gipaw)
 end
 
 function upf2_dump_psp(upffile::UpfFile)::EzXML.Node
@@ -83,6 +97,10 @@ function upf2_dump_psp(upffile::UpfFile)::EzXML.Node
     # PP_NLCC
     if !isnothing(upffile.nlcc)
         addelement!(root_node, "PP_NLCC", array_to_text(upffile.nlcc))
+    end
+    # PP_TAUMOD
+    if !isnothing(upffile.taumod)
+        addelement!(root_node, "PP_TAUMOD", array_to_text(upffile.taumod))
     end
     # PP_LOCAL
     if !isnothing(upffile.local_)
@@ -104,6 +122,10 @@ function upf2_dump_psp(upffile::UpfFile)::EzXML.Node
     end
     # PP_RHOATOM
     addelement!(root_node, "PP_RHOATOM", array_to_text(upffile.rhoatom))
+    # PP_TAUATOM
+    if !isnothing(upffile.tauatom)
+        addelement!(root_node, "PP_TAUATOM", array_to_text(upffile.tauatom))
+    end
     # PP_SPINORB
     if !isnothing(upffile.spin_orb)
         link!(root_node, upf2_dump_spin_orb(upffile.spin_orb))
@@ -140,6 +162,7 @@ function upf2_parse_header(node::EzXML.Node)
     has_gipaw = get_attr(Bool, node, "has_gipaw")
     paw_as_gipaw = get_attr(Bool, node, "paw_as_gipaw")
     core_correction = get_attr(Bool, node, "core_correction")
+    with_metagga_info = get_attr(Bool, node, "with_metagga_info"; default=false)
     functional = join(filter(!isempty, split(get_attr(String, node, "functional"), functional_dlm)), ' ')
     z_valence = get_attr(Float64, node, "z_valence")
     total_psenergy = get_attr(Float64, node, "total_psenergy")
@@ -156,8 +179,8 @@ function upf2_parse_header(node::EzXML.Node)
 
     return UpfHeader(generated, author, date, comment, element, pseudo_type,
                      relativistic, is_ultrasoft, is_paw, is_coulomb, has_so, has_wfc,
-                     has_gipaw, paw_as_gipaw, core_correction, functional, z_valence,
-                     total_psenergy, wfc_cutoff, rho_cutoff, l_max, l_max_rho, l_local,
+                     has_gipaw, paw_as_gipaw, core_correction, with_metagga_info, functional,
+                     z_valence, total_psenergy, wfc_cutoff, rho_cutoff, l_max, l_max_rho, l_local,
                      mesh_size, number_of_wfc, number_of_proj)
 end
 
@@ -194,10 +217,10 @@ function upf2_parse_mesh(node::EzXML.Node)
     if isnothing(mesh)
         mesh = get_attr(Int, r_node, "size")
     end
-    r = parse_nodecontent(Float64, r_node)  # Bohr
+    r = parse_nodecontent(r_node)  # Bohr
     # PP_RAB
     rab_node = findfirst("PP_RAB", node)
-    rab = parse_nodecontent(Float64, rab_node)
+    rab = parse_nodecontent(rab_node)
     return UpfMesh(r, rab, mesh, rmax, dx, xmin, zmesh)
 end
 upf2_parse_mesh(doc::EzXML.Document) = upf2_parse_mesh(findfirst("PP_MESH", root(doc)))
@@ -225,7 +248,7 @@ function upf2_parse_qij(node::EzXML.Node)
     composite_index = get_attr(Int, node, "composite_index")
     is_null = get_attr(Bool, node, "is_null")
     # PP_QIJ.$i.$j
-    qij = parse_nodecontent(Float64, node)
+    qij = parse_nodecontent(node)
     return UpfQij(qij, first_index, second_index, composite_index, is_null)
 end
 
@@ -249,7 +272,7 @@ function upf2_parse_qijl(node::EzXML.Node)
     composite_index = get_attr(Int, node, "composite_index")
     is_null = get_attr(Bool, node, "is_null")
     # PP_QIJL.$i.$j
-    qijl = parse_nodecontent(Float64, node)
+    qijl = parse_nodecontent(node)
     return UpfQijl(qijl, angular_momentum, first_index, second_index, composite_index,
                    is_null)
 end
@@ -279,7 +302,7 @@ function upf2_parse_augmentation(node::EzXML.Node)
     cutoff_r_index = get_attr(Float64, node, "cutoff_r_index")
 
     q_node = findfirst("PP_Q", node)
-    q_vector = parse_nodecontent(Float64, q_node)
+    q_vector = parse_nodecontent(q_node)
     q_size = get_attr(Int, q_node, "size")
     isnothing(q_size) && (q_size = length(q_vector))
     nq = Int(sqrt(q_size))
@@ -289,7 +312,7 @@ function upf2_parse_augmentation(node::EzXML.Node)
     if isnothing(multipoles_node)
         multipoles = nothing
     else
-        multipoles = parse_nodecontent(Float64, multipoles_node)
+        multipoles = parse_nodecontent(multipoles_node)
     end
 
     qfcoef_node = findfirst("PP_QFCOEF", node)
@@ -297,7 +320,7 @@ function upf2_parse_augmentation(node::EzXML.Node)
         qfcoefs = nothing
     else
         error("Cannot parse UPF v2.0.1 with PP_QFCOEF")
-        # qfcoefs = parse_nodecontent(Float64, qfcoef_node)
+        # qfcoefs = parse_nodecontent(qfcoef_node)
     end
 
     rinner_node = findfirst("PP_RINNER", node)
@@ -305,7 +328,7 @@ function upf2_parse_augmentation(node::EzXML.Node)
         rinner = nothing
     else
         error("Cannot parse UPF v2.0.1 with PP_RINNER")
-        # rinner = parse_nodecontent(Float64, rinner_node)
+        # rinner = parse_nodecontent(rinner_node)
     end
 
     qij_nodes = [n for n in eachnode(node) if occursin("PP_QIJ.", nodename(n))]
@@ -404,7 +427,7 @@ function upf2_parse_beta(node::EzXML.Node)
     # PP_BETA.$i
     #* Note: all the data are parsed, not just up until the cutoff radius index
     #* Note: it is the _user's_ responsibility to cut off the projector data
-    beta = parse_nodecontent(Float64, node)  # [1:cutoff_radius_index]
+    beta = parse_nodecontent(node)  # [1:cutoff_radius_index]
     return UpfBeta(beta, index, angular_momentum, cutoff_radius_index, cutoff_radius,
                    norm_conserving_radius, ultrasoft_cutoff_radius, label)
 end
@@ -426,7 +449,7 @@ function upf2_parse_nonlocal(node::EzXML.Node)
     betas = upf2_parse_beta.(beta_nodes)
 
     dij_node = findfirst("PP_DIJ", node)
-    dij = parse_nodecontent(Float64, dij_node)
+    dij = parse_nodecontent(dij_node)
     dij = reshape(dij, length(betas), length(betas))
 
     augmentation_node = findfirst("PP_AUGMENTATION", node)
@@ -472,7 +495,7 @@ function upf2_parse_chi(node::EzXML.Node)
     cutoff_radius = get_attr(Float64, node, "cutoff_radius")
     ultrasoft_cutoff_radius = get_attr(Float64, node, "ultrasoft_cutoff_radius")
     # PP_CHI.$i
-    chi = parse_nodecontent(Float64, node)
+    chi = parse_nodecontent(node)
     return UpfChi(chi, l, occupation, index, label, n, pseudo_energy, cutoff_radius,
                   ultrasoft_cutoff_radius)
 end
@@ -557,7 +580,7 @@ function upf2_parse_wfc(node::EzXML.Node)
     end
     l = get_attr(Int, node, "l")
     label = get_attr(String, node, "label")
-    wfc = parse_nodecontent(Float64, node)
+    wfc = parse_nodecontent(node)
     return UpfWfc(wfc, index, l, label)
 end
 
@@ -600,13 +623,13 @@ function upf2_parse_paw(node::EzXML.Node)
     core_energy = get_attr(Float64, node, "core_energy")
 
     occupations_node = findfirst("PP_OCCUPATIONS", node)
-    occupations = parse_nodecontent(Float64, occupations_node)
+    occupations = parse_nodecontent(occupations_node)
 
     ae_nlcc_node = findfirst("PP_AE_NLCC", node)
-    ae_nlcc = parse_nodecontent(Float64, ae_nlcc_node)
+    ae_nlcc = parse_nodecontent(ae_nlcc_node)
 
     ae_vloc_node = findfirst("PP_AE_VLOC", node)
-    ae_vloc = parse_nodecontent(Float64, ae_vloc_node)
+    ae_vloc = parse_nodecontent(ae_vloc_node)
 
     aewfc_nodes = [n for n in eachnode(node) if occursin("PP_AEWFC", nodename(n))]
     aewfcs = upf2_parse_wfc.(aewfc_nodes)
@@ -652,7 +675,7 @@ function upf2_parse_gipaw_core_orbital(node::EzXML.Node)
     # Sometimes these integers are printed as floats
     n = Int(get_attr(Float64, node, "n"))
     l = Int(get_attr(Float64, node, "l"))
-    core_orbital = parse_nodecontent(Float64, node)
+    core_orbital = parse_nodecontent(node)
     return UpfGipawCoreOrbital(index, label, n, l, core_orbital)
 end
 
@@ -770,9 +793,16 @@ function set_attr!(node::EzXML.Node, key::Symbol, value::Any)
     set_attr!(node, string(key), value)
 end
 
-function parse_nodecontent(::Type{T}, node::EzXML.Node) where {T}
+function parse_nodecontent(node::EzXML.Node)
     words = split(strip(nodecontent(node)))
-    data = Vector{T}(undef, length(words))
-    data .= parse.(T, words)
+    data = map(words) do word
+        midx = findfirst('-', word)
+        # Handle Fortran numbers without exponent letter
+        # (e.g. "2.0371314709-319")
+        if midx !== nothing && midx != 1 && isdigit(word[midx-1])
+            word = word[1:midx-1] * 'E' * word[midx:end]
+        end
+        parse(Float64, word)
+    end
     return data
 end
