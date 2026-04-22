@@ -7,3 +7,10 @@ In XML, `&` actually _begins_ escape sequences (e.g. `<` is `&lt;`),
 so we only want to replace `&`s that are not followed by a valid escape sequence.
 """
 escape_ampersand(text) = replace(text, r"&(?!(amp|apos|quot|lt|gt);)" => "&amp;")
+escape_for_xml(text) = replace(
+    escape_ampersand(text),
+    "\"" => "&quot;",
+    "'" => "&apos;",
+    "<" => "&lt;",
+    ">" => "&gt;",
+)
