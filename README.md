@@ -23,7 +23,7 @@ If your favorite format does not appear in the table below, please file an [issu
 | PSP6/FHI98PP             | Not planned |
 | PSP7/ABINIT PAW          | Not planned |
 | PSP8/ONCVPSP             | ✅          |
-| PSP9/PSML                | Not planned |
+| PSP9/PSML                | ✅          |
 | PSP17/ABINIT PAW XML     | Not planned |
 | FPMD XML                 | Not planned |
 | Vanderbilt USPP          | Not planned |
@@ -35,11 +35,11 @@ Be sure to check the docstrings and comments here in PseudoPotentialIO.jl or the
 
 ## Writing pseudopotentials
 This package also supports writing pseudopotentials, currently only in
-the UPF v2.0.1 and PSP8 format. This is done using `save_psp_file`:
+the UPF v2.0.1, PSP8, and PSML format. This is done using `save_psp_file`:
 ```jl
 save_psp_file("path/to/pseudo.upf", pseudo)
 ```
-where `pseudo` is a `UpfFile` or `Psp8File`.
+where `pseudo` is a `UpfFile`, `Psp8File`, or `PsmlFile`.
 Support for additional formats might be added in the future.
 
 ## Converting pseudopotentials
