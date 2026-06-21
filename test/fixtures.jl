@@ -1,6 +1,7 @@
 _FILE_EXT_LOADERS = Dict(".upf" => UpfFile,
                          ".psp8" => Psp8File,
-                         ".hgh" => HghFile)
+                         ".hgh" => HghFile,
+                         ".psml" => PsmlFile)
 
 # Resolve the name of a PsP family artifact into its directory
 # or return the input if it's already a directory
@@ -141,6 +142,25 @@ for (family, filename) in HGH_CASES
         error("HGH_CASE_FILEPATHS already contains a case for $filename")
     end
 end
+
+PSML_CASE_FILEPATHS = Dict(
+    "14_Si_UPF_r.psml" => joinpath(@__DIR__, "data/14_Si_UPF_r.psml"),
+    "56_Ba_m.psml" => joinpath(@__DIR__, "data/56_Ba_m.psml"),
+    "80_Hg-siesta-vnl.psml" => joinpath(@__DIR__, "data/80_Hg-siesta-vnl.psml"),
+    "14_Si.psml" => joinpath(@__DIR__, "data/14_Si.psml"),
+    "29_Cu_m.psml" => joinpath(@__DIR__, "data/29_Cu_m.psml"),
+    "52_Te_r.psml" => joinpath(@__DIR__, "data/52_Te_r.psml"),
+    "80_Hg.psml" => joinpath(@__DIR__, "data/80_Hg.psml"),
+    "83_Bi_r.psml" => joinpath(@__DIR__, "data/83_Bi_r.psml"),
+    "Ba.sc-ionic-siesta-vnl.psml" => joinpath(@__DIR__, "data/Ba.sc-ionic-siesta-vnl.psml"),
+    "Ba.sc-ionic.psml" => joinpath(@__DIR__, "data/Ba.sc-ionic.psml"),
+    "Fe_fr.psml" => joinpath(@__DIR__, "data/Fe_fr.psml"),
+    "Fe_sr.psml" => joinpath(@__DIR__, "data/Fe_sr.psml"),
+    "Fe.spin-siesta-vnl.psml" => joinpath(@__DIR__, "data/Fe.spin-siesta-vnl.psml"),
+    "Fe.spin.psml" => joinpath(@__DIR__, "data/Fe.spin.psml"),
+    "mgga.psml" => joinpath(@__DIR__, "data/mgga.psml"),
+    "Si.tm2.nrl.vnl.psml" => joinpath(@__DIR__, "data/Si.tm2.nrl.vnl.psml"),
+)
 
 NUMERIC_CASE_FILEPATHS = Dict(
     "B_pbe_v1.01.uspp.F.UPF" => UPF1_CASE_FILEPATHS["B_pbe_v1.01.uspp.F.UPF"],

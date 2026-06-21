@@ -13,6 +13,7 @@ PsPFile
 UpfFile
 Psp8File
 HghFile
+PsmlFile
 ```
 
 ## Functions

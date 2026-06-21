@@ -1,6 +1,7 @@
 _FILE_EXT_LOADERS = Dict(".upf"  => UpfFile,
                          ".psp8" => Psp8File,
-                         ".hgh"  => HghFile)
+                         ".hgh"  => HghFile,
+                         ".psml" => PsmlFile)
 
 """
 Parse a pseudopotential file into a [`PsPFile`](@ref) struct.
