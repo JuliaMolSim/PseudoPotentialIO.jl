@@ -51,4 +51,8 @@ include("fixtures.jl")
     if any(in.(("all", "agreement"), Ref(TAGS)))
         include("upf_psp8_agreement.jl")
     end
+
+    if any(in.(("all", "file", "upf", "augmentation"), Ref(TAGS)))
+        include("upf_augmentation.jl")
+    end
 end
