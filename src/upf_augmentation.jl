@@ -53,9 +53,11 @@ struct UpfAugmentationData{T}
     """
     proj_l::Vector{Int}
     """
-    `true` for PAW, `false` for plain ultrasoft. Both report `is_ultrasoft = true` in the
-    UPF header (`PAW` is a *strict superset* of ultrasoft data in the UPF schema), so the
-    header alone cannot disambiguate; this field does (from `pseudo_type == "PAW"`).
+    `true` for PAW, `false` for plain ultrasoft, from `pseudo_type == "PAW"` -- the same
+    test as [`PseudoPotentialIO.is_paw`](@ref), carried along here so that consumers
+    holding only this struct do not also need the `UpfFile`. Note that PAW files report
+    `is_ultrasoft = true` as well (PAW data is a superset of ultrasoft data in the UPF
+    schema), so that flag is not the one to branch on.
     """
     is_paw::Bool
     """

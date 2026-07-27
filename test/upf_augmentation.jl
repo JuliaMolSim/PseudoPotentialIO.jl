@@ -1,9 +1,8 @@
 @testset "upf_augmentation" begin
-    # Fixtures are existing test-artifact files: pslibrary ultrasoft (Si) and PAW (Al),
-    # plus a PAW file from a different generator (Dy) to cover l channels up to f.
-    # NOTE: the fully-relativistic path (PP_AEWFC_REL Dirac small components) has no
-    # fully-relativistic ultrasoft/PAW file among the hosted test artifacts yet, so it is
-    # not covered here.
+    # Most fixtures come from the existing test artifacts: pslibrary ultrasoft (Si) and
+    # PAW (Al), plus a PAW file from a different generator (Dy) for l channels up to f.
+    # The fully-relativistic case (PP_AEWFC_REL appears only in fully-relativistic PAW
+    # files) is fetched on demand -- see the FR_PAW_FIXTURE machinery in fixtures.jl.
 
     @testset "ultrasoft (Si rrkjus)" begin
         file = load_psp_file(UPF2_CASE_FILEPATHS["Si.pbe-n-rrkjus_psl.1.0.0.UPF"])
@@ -106,6 +105,34 @@
                 @test abs(li - lj) <= l <= li + lj
                 @test iseven(l - li - lj)
             end
+        end
+    end
+
+    if !haskey(UPF2_CASE_FILEPATHS, FR_PAW_FIXTURE)
+        @test_skip "fully-relativistic PAW (C rel-kjpaw): fixture download unavailable"
+    else
+        @testset "fully-relativistic PAW (C rel-kjpaw)" begin
+            file = load_psp_file(UPF2_CASE_FILEPATHS[FR_PAW_FIXTURE])
+            aug = upf_augmentation(file)
+            @test aug.is_paw
+            @test file.header.has_so
+            nproj = file.header.number_of_proj
+            @test nproj == 6
+            @test aug.proj_l == [0, 0, 1, 1, 1, 1]
+
+            # Fully-relativistic files concatenate PP_AEWFC (Dirac large components) and
+            # PP_AEWFC_REL (small components) into a single 2*nproj block, which the
+            # accessor splits back apart.
+            @test length(file.full_wfc.aewfcs) == 2nproj
+            @test length(aug.aewfcs) == nproj
+            @test length(aug.ae_rel_wfcs) == nproj
+            @test all(aug.aewfcs[i] != aug.ae_rel_wfcs[i] for i = 1:nproj)
+            @test all(length(w) == length(file.mesh.r) for w in aug.ae_rel_wfcs)
+
+            @test aug.i_cut == 749
+            @test aug.qq_at[1, 1] ≈ -0.06118443141872321 rtol=1e-12
+            @test aug.aewfcs[1][500] ≈ 0.2988187274128993 rtol=1e-12
+            @test aug.ae_rel_wfcs[1][500] ≈ -0.007146824131769734 rtol=1e-12
         end
     end
 

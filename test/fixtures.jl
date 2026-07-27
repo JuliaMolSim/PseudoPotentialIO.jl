@@ -114,6 +114,40 @@ for (family, filename) in UPF2_CASES
 end
 UPF2_CASE_FILEPATHS["56_Ba_m.upf"] = joinpath(@__DIR__, "data/56_Ba_m.upf")
 
+# Fully-relativistic PAW fixture. None of the hosted test artifacts contain a
+# fully-relativistic ultrasoft/PAW file, and the pslibrary data is GPL-2.0-or-later, so
+# instead of vendoring it into the (MIT) repo tree it is fetched on demand from the
+# official Quantum ESPRESSO distribution site and cached in test/data (where *.UPF is
+# gitignored). A failed download skips the dependent tests (visibly, via @test_skip); a
+# checksum mismatch on a downloaded file is an error, not a skip.
+const FR_PAW_FIXTURE = "C.rel-pbe-n-kjpaw_psl.1.0.0.UPF"
+function _fetch_fr_paw_fixture()
+    sha256_expected = "1bf2b8cb3bcee427353f531641dd749b13eaad3f6eff9c12a8d3fe418ea85b3d"
+    target = joinpath(@__DIR__, "data", FR_PAW_FIXTURE)
+    if !isfile(target)
+        url = "https://pseudopotentials.quantum-espresso.org/upf_files/" * FR_PAW_FIXTURE
+        tmp = tempname()
+        try
+            Downloads.download(url, tmp)
+        catch e
+            @warn("Could not download the fully-relativistic PAW test fixture; " *
+                  "dependent tests will be skipped.", url, exception=e)
+            return nothing
+        end
+        mv(tmp, target)
+    end
+    sha256_actual = bytes2hex(open(SHA.sha256, target))
+    if sha256_actual != sha256_expected
+        error("Checksum mismatch for $target: expected $sha256_expected, " *
+              "got $sha256_actual. Delete the file to re-download.")
+    end
+    target
+end
+fr_paw_fixture_path = _fetch_fr_paw_fixture()
+if !isnothing(fr_paw_fixture_path)
+    UPF2_CASE_FILEPATHS[FR_PAW_FIXTURE] = fr_paw_fixture_path
+end
+
 PSP8_CASES = [
      ("pd_nc_sr_pbe_standard_0.4.1_psp8", "H.psp8"),
      ("pd_nc_sr_pbe_standard_0.4.1_psp8", "Fe.psp8"),

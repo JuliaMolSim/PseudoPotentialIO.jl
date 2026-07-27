@@ -4,11 +4,13 @@ using PseudoPotentialIO: is_norm_conserving, is_ultrasoft, is_paw,
     has_spin_orbit, has_model_core_charge_density, identifier, 
     format, element, functional, valence_charge, formalism
 using Aqua
+using Downloads
 using LazyArtifacts
 using PeriodicTable
 using JSON
 using LinearAlgebra
 using Random
+using SHA
 
 Random.seed!(0)
 
