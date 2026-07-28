@@ -9,11 +9,11 @@
         aug = upf_augmentation(file)
         @test aug isa UpfAugmentationData
         @test !aug.is_paw
-        @test aug.aewfcs === nothing
-        @test aug.pswfcs === nothing
-        @test aug.ae_rel_wfcs === nothing
-        @test aug.ae_core_density === nothing
-        @test aug.ae_vloc === nothing
+        @test isnothing(aug.aewfcs)
+        @test isnothing(aug.pswfcs)
+        @test isnothing(aug.ae_rel_wfcs)
+        @test isnothing(aug.ae_core_density)
+        @test isnothing(aug.ae_vloc)
         # No augmentation-sphere truncation without PAW partial waves to compare.
         @test aug.i_cut == length(file.mesh.r)
 
@@ -58,9 +58,9 @@
         @test aug.is_paw
         nproj = file.header.number_of_proj
         @test nproj == 6
-        @test aug.aewfcs !== nothing && length(aug.aewfcs) == nproj
-        @test aug.pswfcs !== nothing && length(aug.pswfcs) == nproj
-        @test aug.ae_rel_wfcs === nothing  # scalar-relativistic: no small components
+        @test !isnothing(aug.aewfcs) && length(aug.aewfcs) == nproj
+        @test !isnothing(aug.pswfcs) && length(aug.pswfcs) == nproj
+        @test isnothing(aug.ae_rel_wfcs)  # scalar-relativistic: no small components
         @test all(length(w) == length(file.mesh.r) for w in aug.aewfcs)
         @test all(length(w) == length(file.mesh.r) for w in aug.pswfcs)
 
@@ -75,11 +75,11 @@
             @test aug.aewfcs[beta][aug.i_cut:end] == aug.pswfcs[beta][aug.i_cut:end]
         end
 
-        @test aug.ae_core_density !== nothing
+        @test !isnothing(aug.ae_core_density)
         @test length(aug.ae_core_density) == length(file.mesh.r)
         @test aug.ae_core_density[1] ≈ 1490.764267098482 rtol=1e-12
         # ae_vloc keeps the file's raw Rydberg values, like PP_LOCAL.
-        @test aug.ae_vloc !== nothing
+        @test !isnothing(aug.ae_vloc)
         @test length(aug.ae_vloc) == length(file.mesh.r)
         @test aug.ae_vloc == file.paw.ae_vloc
         @test aug.ae_vloc[1] ≈ -370575.6139724471 rtol=1e-12

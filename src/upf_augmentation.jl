@@ -132,8 +132,8 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
         error("upf_augmentation: pseudopotential '$identifier' has pseudo_type " *
               "'$pseudo_type', not one of US/USPP/PAW.")
     aug = file.nonlocal.augmentation
-    aug !== nothing || error("upf_augmentation: pseudopotential '$identifier' has no " *
-                              "PP_AUGMENTATION block.")
+    isnothing(aug) && error("upf_augmentation: pseudopotential '$identifier' has no " *
+                            "PP_AUGMENTATION block.")
     aug.q_with_l ||
         error("upf_augmentation: pseudopotential '$identifier' uses the legacy " *
               "`q_with_l = false` augmentation charge format (Taylor-pseudized " *
@@ -203,12 +203,12 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
     end
 
     ae_core_density = nothing
-    if is_paw && file.paw !== nothing && !isempty(file.paw.ae_nlcc)
+    if is_paw && !isnothing(file.paw) && !isempty(file.paw.ae_nlcc)
         ae_core_density = file.paw.ae_nlcc
     end
 
     ae_vloc = nothing
-    if is_paw && file.paw !== nothing && !isempty(file.paw.ae_vloc)
+    if is_paw && !isnothing(file.paw) && !isempty(file.paw.ae_vloc)
         length(file.paw.ae_vloc) == length(rgrid) || error(
             "upf_augmentation: PAW pseudopotential '$identifier': `PP_AE_VLOC` length " *
             "$(length(file.paw.ae_vloc)) ≠ mesh length $(length(rgrid)).")
@@ -217,11 +217,26 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
 
     i_cut = length(rgrid)
     if is_paw
+        # By PAW construction each PS partial wave matches its AE partner at and beyond
+        # the augmentation-sphere radius and differs inside it (where the nodal AE wave
+        # is pseudized away):
+        #
+        #   |    _.--- AE = PS
+        #   |   / `--..__
+        #   |  /\   AE=PS`--
+        #   | /  \  /
+        #   |/    \/
+        #   |ddddddddd_eeeee     d = differ, e = equal
+        #            ^ last differing index = sphere edge
+        #
+        # so the LAST index where any pair still differs marks the sphere edge (the
+        # equality beyond i_cut is asserted in the test suite). The pre-margin start
+        # value 1 is only reached in the degenerate all-channels-identical case.
         i_cut_empirical = 1
         for beta in eachindex(proj_l)
             ae, ps = aewfcs[beta], pswfcs[beta]
             idx = findlast(i -> ae[i] != ps[i], eachindex(rgrid))
-            idx === nothing && continue
+            isnothing(idx) && continue  # degenerate channel: AE and PS identical everywhere
             i_cut_empirical = max(i_cut_empirical, idx)
         end
         i_cut_empirical = min(length(rgrid), i_cut_empirical + 2)  # 2-point margin
@@ -230,7 +245,7 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
         # former, some generators only the latter. Take the first in-range value.
         i_cut_file = nothing
         for cutoff in (aug.cutoff_r_index, aug.iraug)
-            cutoff === nothing && continue
+            isnothing(cutoff) && continue
             candidate = round(Int, cutoff)
             if 1 ≤ candidate ≤ length(rgrid)
                 i_cut_file = candidate
@@ -243,7 +258,7 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
             end
         end
 
-        if i_cut_file !== nothing
+        if !isnothing(i_cut_file)
             i_cut = i_cut_file
             # Tolerance relative to the grid size: where exactly the AE/PS tails start to
             # differ numerically is generator-dependent, so a fixed margin flags healthy
