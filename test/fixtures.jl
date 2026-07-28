@@ -126,10 +126,11 @@ function _fetch_fr_paw_fixture()
     target = joinpath(@__DIR__, "data", FR_PAW_FIXTURE)
     if !isfile(target)
         url = "https://pseudopotentials.quantum-espresso.org/upf_files/" * FR_PAW_FIXTURE
-        tmp = tempname()
+        tmp = target * ".download"  # same directory, so the mv below cannot cross devices
         try
-            Downloads.download(url, tmp)
+            Downloads.download(url, tmp; timeout=60)
         catch e
+            isfile(tmp) && rm(tmp)
             @warn("Could not download the fully-relativistic PAW test fixture; " *
                   "dependent tests will be skipped.", url, exception=e)
             return nothing

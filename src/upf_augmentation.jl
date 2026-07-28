@@ -97,11 +97,12 @@ struct UpfAugmentationData{T}
     """
     ae_vloc::Union{Nothing, Vector{T}}
     """
-    (PAW only) the augmentation-sphere cutoff grid index: `aewfcs`/`pswfcs` are
-    bit-for-bit identical beyond this radius by PAW construction, so one-center radial
-    sums must be truncated here to avoid catastrophic cancellation from the (potentially
-    large, for unbound reference channels) shared tail. `length(rgrid)` (no truncation)
-    for plain ultrasoft.
+    (PAW only) the augmentation-sphere cutoff grid index: beyond this radius
+    `aewfcs`/`pswfcs` agree to the file's write precision (bit-for-bit for e.g.
+    pslibrary files; tail differences of order 1e-9 for some other generators), so
+    one-center radial sums must be truncated here to avoid catastrophic cancellation
+    from the (potentially large, for unbound reference channels) shared tail.
+    `length(rgrid)` (no truncation) for plain ultrasoft.
 
     PRIMARY SOURCE: the file's own `PP_AUGMENTATION/cutoff_r_index` attribute -- QE's
     `iraug` (`upflib/read_upf_new.f90`), which QE itself uses to zero
@@ -221,17 +222,14 @@ function upf_augmentation(file::UpfFile; identifier=file.identifier)
         # the augmentation-sphere radius and differs inside it (where the nodal AE wave
         # is pseudized away):
         #
-        #   |    _.--- AE = PS
-        #   |   / `--..__
-        #   |  /\   AE=PS`--
-        #   | /  \  /
-        #   |/    \/
-        #   |ddddddddd_eeeee     d = differ, e = equal
-        #            ^ last differing index = sphere edge
+        #   grid:  |------- AE != PS -------|--------- AE == PS ---------|
+        #          1                        ^ sphere edge                end
+        #                                     = last differing index
         #
-        # so the LAST index where any pair still differs marks the sphere edge (the
-        # equality beyond i_cut is asserted in the test suite). The pre-margin start
-        # value 1 is only reached in the degenerate all-channels-identical case.
+        # so findlast of "differs" marks the sphere edge, not the grid end. Exact `!=`
+        # can overshoot slightly for generators that write the shared tail with ~1e-9
+        # noise; overshooting is the safe direction (less truncation). The pre-margin
+        # start value 1 is only reached in the degenerate all-channels-identical case.
         i_cut_empirical = 1
         for beta in eachindex(proj_l)
             ae, ps = aewfcs[beta], pswfcs[beta]
