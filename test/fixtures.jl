@@ -112,7 +112,8 @@ for (family, filename) in UPF2_CASES
         error("UPF2_CASE_FILEPATHS already contains a case for $filename")
     end
 end
-UPF2_CASE_FILEPATHS["56_Ba_m.upf"] = joinpath(@__DIR__, "data/56_Ba_m.upf")
+UPF2_CASE_FILEPATHS["56_Ba_m.upf"]     = joinpath(@__DIR__, "data/56_Ba_m.upf")
+UPF2_CASE_FILEPATHS["al.blps.lda.upf"] = joinpath(@__DIR__, "data/al.blps.lda.upf")
 
 PSP8_CASES = [
      ("pd_nc_sr_pbe_standard_0.4.1_psp8", "H.psp8"),

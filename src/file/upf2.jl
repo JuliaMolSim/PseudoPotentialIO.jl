@@ -22,6 +22,7 @@ function upf2_parse_psp(io::IO; identifier="")
         nlcc = nothing
     else
         nlcc = parse_nodecontent(nlcc_node)
+        isempty(nlcc) && (nlcc = nothing) 
     end
     #* PP_TAUMOD
     taumod_node = findfirst("PP_TAUMOD", root_node)
@@ -452,6 +453,10 @@ function upf2_parse_nonlocal(node::EzXML.Node)
     dij = parse_nodecontent(dij_node)
     dij = reshape(dij, length(betas), length(betas))
 
+    keep  = [!all(iszero, b.beta) for b in betas]
+    betas = betas[keep] 
+    dij   = dij[keep, keep] 
+    
     augmentation_node = findfirst("PP_AUGMENTATION", node)
     if isnothing(augmentation_node)
         augmentation = nothing
