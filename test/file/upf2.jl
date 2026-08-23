@@ -798,4 +798,13 @@
         τ_W = ∇ρatom.^2 ./ (8 .* ρatom)
         @test all(τatom[2:end] .- τ_W[2:end] .≥ 0)
     end
+    
+    @testset "al.blps.lda.upf (DFTpy)" begin
+    filename = "al.blps.lda.upf"
+    file = load_psp_file(UPF2_CASE_FILEPATHS[filename])
+
+    @test isnothing(file.nlcc)
+    @test isempty(file.nonlocal.betas)
+    @test size(file.nonlocal.dij) == (0, 0)
+    end
 end
