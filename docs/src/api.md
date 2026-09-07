@@ -13,6 +13,7 @@ PsPFile
 UpfFile
 Psp8File
 HghFile
+UpfAugmentationData
 ```
 
 ## Functions
@@ -26,6 +27,11 @@ save_psp_file
 ### Conversion
 ```@docs
 UpfFile(::Psp8File)
+```
+
+### Ultrasoft / PAW augmentation
+```@docs
+upf_augmentation
 ```
 
 ### Metadata

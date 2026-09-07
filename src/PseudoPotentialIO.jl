@@ -56,6 +56,9 @@ include("file/upf.jl")
 include("file/upf1.jl")
 include("file/upf2.jl")
 
+export UpfAugmentationData, upf_augmentation
+include("upf_augmentation.jl")
+
 export Psp8File
 include("file/psp8.jl")
 
