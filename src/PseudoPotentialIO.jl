@@ -1,8 +1,10 @@
 module PseudoPotentialIO
 using EzXML
+using InteractiveUtils
 using Printf
 using PeriodicTable
 using Statistics
+using Serde
 
 using PeriodicTable: PeriodicTable
 import Base.Broadcast.broadcastable
@@ -61,6 +63,9 @@ include("file/psp8.jl")
 
 export HghFile
 include("file/hgh.jl")
+
+export PsmlFile
+include("file/psml.jl")
 
 ## Loading/listing functions
 export load_psp_file
