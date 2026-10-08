@@ -48,6 +48,10 @@ include("fixtures.jl")
         include("file/hgh.jl")
     end
 
+    if any(in.(("all", "file", "roundtrip"), Ref(TAGS)))
+        include("file/roundtrip.jl")
+    end
+
     if any(in.(("all", "agreement"), Ref(TAGS)))
         include("upf_psp8_agreement.jl")
     end

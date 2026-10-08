@@ -378,7 +378,7 @@ function save_psp(io::IO, file::Psp8File)
     psp8_write_header(io, file)
     psp8_write_main_blocks(io, file)
     if file.header.extension_switch in (2, 3)
-        for l in 0:(file.lmax)
+        for l in 1:(file.header.lmax)
             psp8_write_beta_projector_block(io, file.rgrid, l, file.ekb_so[l + 1],
                                             file.projectors_so[l + 1])
         end
@@ -404,7 +404,7 @@ function psp8_write_header(io::IO, header::Psp8Header)
     println(io, join(map(n -> @sprintf("% 12d", n), header.nproj), ' '))
     @printf io "% 12d\n" header.extension_switch
     if header.extension_switch in (2, 3)
-        println(io, joint(string.(header.nproj), ' '))
+        println(io, join(map(n -> @sprintf("% 12d", n), header.nprojso[2:end]), ' '))
     end
 end
 psp8_write_header(io::IO, file::Psp8File) = psp8_write_header(io, file.header)

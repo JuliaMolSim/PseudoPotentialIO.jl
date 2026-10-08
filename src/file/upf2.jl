@@ -528,7 +528,7 @@ function upf2_parse_relwfc(node::EzXML.Node)
 end
 
 function upf2_dump_relwfc(relwfc::UpfRelWfc)::EzXML.Node
-    node = ElementNode("PP_RELWFC")
+    node = ElementNode("PP_RELWFC.$(relwfc.index)")
 
     for n in fieldnames(UpfRelWfc)
         set_attr!(node, n, getfield(relwfc, n))
@@ -545,7 +545,7 @@ function upf2_parse_relbeta(node::EzXML.Node)
 end
 
 function upf2_dump_relbeta(relbeta::UpfRelBeta)::EzXML.Node
-    node = ElementNode("PP_RELBETA")
+    node = ElementNode("PP_RELBETA.$(relbeta.index)")
     set_attr!(node, "index", relbeta.index)
     set_attr!(node, "jjj", relbeta.jjj)
     set_attr!(node, "lll", relbeta.lll)

@@ -18,7 +18,7 @@ function UpfHeader(header::Psp8Header)
     core_correction = header.fchrg > 0
     # TODO: metapsp can output psp8 mgga files but we don't support them yet
     with_metagga_info = false
-    functional = libxc_to_qe_old(libxc_string(header))
+    functional = libxc_to_qe_internal(libxc_string(header))
     z_valence = header.zion
     total_psenergy = nothing
     wfc_cutoff = nothing
